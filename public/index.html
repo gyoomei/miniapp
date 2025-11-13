@@ -1,13 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>FID Checker</title>
-    <!-- Farcaster meta -->
-    <meta name="fc:miniapp" content='{"homeURL":"https://fidchecker.pages.dev/","icon":"https://fidchecker.pages.dev/assets/icon-1024.png"}' />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
-</html>
+{
+  "name": "farcaster-miniapp",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@farcaster/miniapp-sdk": "^1.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^3.0.0",
+    "vite": "^4.0.0"
+  }
+}
