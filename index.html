@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FID Checker - Farcaster Mini App</title>
+    <link rel="stylesheet" href="src/styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Farcaster ID Checker</h1>
+            <p>Your Farcaster profile information</p>
+        </div>
+
+        <div class="profile-card">
+            <div class="profile-header">
+                <img id="profile-picture" src="" alt="Profile Picture" class="profile-pic">
+                <div class="profile-info">
+                    <h2 id="display-name">Loading...</h2>
+                    <div class="fid-section">
+                        <span class="fid-label">FID:</span>
+                        <span id="fid-value" class="fid-value">---</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button id="copy-fid-btn" class="btn btn-primary">
+                    📋 Copy FID
+                </button>
+                <button id="refresh-btn" class="btn btn-secondary">
+                    🔄 Refresh
+                </button>
+            </div>
+
+            <div class="user-details">
+                <div class="detail-item">
+                    <span class="detail-label">Username:</span>
+                    <span id="username" class="detail-value">-</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Bio:</span>
+                    <span id="bio" class="detail-value">-</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Built with Farcaster Mini Apps SDK</p>
+        </div>
+    </div>
+
+    <div id="toast" class="toast">FID copied to clipboard!</div>
+
+    <script type="module" src="src/app.js"></script>
+</body>
+</html>
