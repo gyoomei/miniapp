@@ -1,6 +1,21 @@
 {
-  "name": "FID Checker",
-  "description": "Check and copy your Farcaster ID instantly",
-  "permissions": ["user"],
-  "url": "https://gyoomei.github.io/miniapp/"
+  "accountAssociation": {
+    "header": "eyJmaWQiOjI0MTQ3MCwidHlwZSI6ImF1dGgiLCJrZXkiOiIweDkyQzgyNTIwOTA3YjZDZmU2MUUzNjNmZTBFOWY2QjdjODJmQzdENTkifQ",
+    "payload": "eyJkb21haW4iOiJtaW5pYXBwLThvYy5wYWdlcy5kZXYifQ",
+    "signature": "71J/kfRBetr2doFgmojACczhTyLGdxrtFXGKf4YyulQk30rEqUItvrta9pJzsZQsu4WjnHJBGnG14RR20Dz8aRw="
+  },
+  "miniapp": {
+    "version": "1",
+    "name": "FID Checker",
+    "iconUrl": "https://miniapp-8oc.pages.dev/assets/icon-1024.png",
+    "homeUrl": "https://miniapp-8oc.pages.dev/",
+    "splashImageUrl": "https://miniapp-8oc.pages.dev/assets/splash-200.png",
+    "splashBackgroundColor": "#6F42C1",
+    "subtitle": "View your Farcaster ID",
+    "description": "Automatically shows your Farcaster FID and profile photo when you open the Mini App.",
+    "primaryCategory": "social",
+    "ogTitle": "FID Checker",
+    "ogDescription": "Instant FID and profile preview.",
+    "ogImageUrl": "https://miniapp-8oc.pages.dev/assets/icon-1024.png"
+  }
 }
