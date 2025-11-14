@@ -1,6 +1,0 @@
-{
-  "name": "FID Checker",
-  "description": "Check and copy your Farcaster ID instantly",
-  "permissions": ["user"],
-  "url": "https://gyoomei.github.io/miniapp/"
-}
