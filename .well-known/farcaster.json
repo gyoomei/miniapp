@@ -14,7 +14,7 @@
     "splashImageUrl": "https://miniapp-8oc.pages.dev/assets/splash-200.png",
     "splashBackgroundColor": "#6F42C1",
     "webhookUrl": "https://miniapp-8oc.pages.dev/api/webhook",
-    "subtitle": "Instant Farcaster Profile Viewer",
+    "subtitle": "Instant Profile Viewer",
     "description": "Automatically displays your Farcaster FID, profile photo, and bio when you open the app. One-tap FID copying and real-time profile data.",
     "screenshotUrls": [
       "https://miniapp-8oc.pages.dev/assets/screenshot1.png",
@@ -23,8 +23,8 @@
     "primaryCategory": "social",
     "tags": ["utility", "profile", "farcaster", "identity", "tools"],
     "heroImageUrl": "https://miniapp-8oc.pages.dev/assets/hero-image.png",
-    "tagline": "Your Farcaster ID, one tap away",
-    "ogTitle": "FID Checker - Instant Farcaster Profile",
+    "tagline": "Your FID, one tap away",
+    "ogTitle": "FID Checker - Profile Tool",
     "ogDescription": "View your Farcaster FID, profile photo, and bio instantly. Copy FID with one tap!",
     "ogImageUrl": "https://miniapp-8oc.pages.dev/assets/social-preview.png",
     "castShareUrl": "https://miniapp-8oc.pages.dev/share-cast"
