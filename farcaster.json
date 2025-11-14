@@ -1,0 +1,16 @@
+{
+  "name": "FID Checker",
+  "description": "Check and copy your Farcaster ID",
+  "icon": "https://yourdomain.com/icon.png",
+  "splash": {
+    "image": "https://yourdomain.com/splash.png",
+    "backgroundColor": "#667eea"
+  },
+  "screenshots": [
+    "https://yourdomain.com/screenshot1.png",
+    "https://yourdomain.com/screenshot2.png"
+  ],
+  "permissions": [
+    "user"
+  ]
+}
