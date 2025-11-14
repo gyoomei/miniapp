@@ -4,7 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FID Checker - Farcaster Mini App</title>
+    <meta property="og:title" content="FID Checker">
+    <meta property="og:description" content="Instant FID and profile preview.">
+    <meta property="og:image" content="https://miniapp-8oc.pages.dev/assets/icon-1024.png">
+    <meta property="og:url" content="https://miniapp-8oc.pages.dev/">
     <link rel="stylesheet" href="src/styles.css">
+    
+    <!-- Preload SDK for better performance -->
+    <link rel="preconnect" href="https://esm.sh">
+    <link rel="dns-prefetch" href="https://esm.sh">
 </head>
 <body>
     <div class="container">
@@ -53,6 +61,7 @@
 
     <div id="toast" class="toast">FID copied to clipboard!</div>
 
+    <!-- Load app.js as module -->
     <script type="module" src="src/app.js"></script>
 </body>
 </html>
