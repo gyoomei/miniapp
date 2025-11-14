@@ -1,7 +1,7 @@
 {
   "name": "fid-checker",
-  "version": "1.0.0",
-  "description": "Farcaster Mini App - FID Checker",
+  "version": "1.1.0",
+  "description": "Instant Farcaster Profile Viewer - Check your FID, profile photo, and bio with one-tap copying",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,8 +10,16 @@
     "start": "npm run dev",
     "deploy": "npm run build"
   },
-  "keywords": ["farcaster", "mini-app", "fid", "blockchain"],
-  "author": "forger",
+  "keywords": [
+    "farcaster", 
+    "mini-app", 
+    "fid", 
+    "profile",
+    "blockchain",
+    "social",
+    "utility"
+  ],
+  "author": "gyoomei",
   "license": "MIT",
   "dependencies": {
     "@farcaster/miniapp-sdk": "^0.1.0"
