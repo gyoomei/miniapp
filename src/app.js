@@ -160,9 +160,16 @@ function updateUserInterface(user) {
         const username = document.getElementById('username');
         username.textContent = user.username || 'Not set';
 
-        // Bio
+        // Bio - Improved handling
         const bio = document.getElementById('bio');
-        bio.textContent = user.bio || 'No bio available';
+        if (user.bio && user.bio.trim().length > 0) {
+            bio.textContent = user.bio;
+            console.log('📝 Bio loaded:', user.bio);
+        } else {
+            bio.textContent = '🌟 Bio is empty - tell us about yourself!';
+            bio.style.fontStyle = 'italic';
+            bio.style.opacity = '0.7';
+        }
         
     } catch (error) {
         console.error('Error updating UI:', error);
