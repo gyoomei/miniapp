@@ -1,16 +1,14 @@
 {
   "name": "FID Checker",
-  "description": "Check and copy your Farcaster ID",
-  "icon": "https://yourdomain.com/icon.png",
+  "description": "Check and copy your Farcaster ID instantly",
+  "icon": "https://raw.githubusercontent.com/gyoomei/farcaster-fid-checker/main/icon.png",
   "splash": {
-    "image": "https://yourdomain.com/splash.png",
+    "image": "https://raw.githubusercontent.com/gyoomei/farcaster-fid-checker/main/splash.png",
     "backgroundColor": "#667eea"
   },
   "screenshots": [
-    "https://yourdomain.com/screenshot1.png",
-    "https://yourdomain.com/screenshot2.png"
+    "https://raw.githubusercontent.com/gyoomei/farcaster-fid-checker/main/screenshot1.png"
   ],
-  "permissions": [
-    "user"
-  ]
+  "permissions": ["user"],
+  "url": "https://gyoomei.github.io/farcaster-fid-checker/"
 }
