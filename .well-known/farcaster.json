@@ -27,6 +27,6 @@
     "ogTitle": "FID Checker - Profile Tool",
     "ogDescription": "View your Farcaster FID, profile photo, and bio instantly. Copy FID with one tap!",
     "ogImageUrl": "https://miniapp-8oc.pages.dev/assets/social-preview.png",
-    "castShareUrl": "https://miniapp-8oc.pages.dev/share-cast"
+    "castShareUrl": "https://miniapp-8oc.pages.dev/"
   }
 }
