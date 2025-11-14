@@ -1,37 +1,179 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" prefix="og: https://ogp.me/ns#">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FID Checker - Farcaster Mini App</title>
     
-    <!-- Open Graph Meta Tags -->
-    <meta property="og:title" content="FID Checker - Profile Tool">
+    <!-- Primary Meta Tags -->
+    <title>FID Checker - Instant Farcaster Profile</title>
+    <meta name="title" content="FID Checker - Instant Farcaster Profile">
+    <meta name="description" content="View your Farcaster FID, profile photo, and bio instantly. Copy FID with one tap!">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://miniapp-8oc.pages.dev/">
+    <meta property="og:title" content="FID Checker - Instant Farcaster Profile">
     <meta property="og:description" content="View your Farcaster FID, profile photo, and bio instantly. Copy FID with one tap!">
     <meta property="og:image" content="https://miniapp-8oc.pages.dev/assets/social-preview.png">
-    <meta property="og:url" content="https://miniapp-8oc.pages.dev/">
-    <meta property="og:type" content="website">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="FID Checker - Farcaster Mini App">
+    <meta property="og:site_name" content="FID Checker">
     
-    <!-- Farcaster Frame Meta Tags -->
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://miniapp-8oc.pages.dev/">
+    <meta property="twitter:title" content="FID Checker - Instant Farcaster Profile">
+    <meta property="twitter:description" content="View your Farcaster FID, profile photo, and bio instantly. Copy FID with one tap!">
+    <meta property="twitter:image" content="https://miniapp-8oc.pages.dev/assets/social-preview.png">
+    <meta property="twitter:image:alt" content="FID Checker - Farcaster Mini App">
+    <meta property="twitter:creator" content="@sayligood">
+    
+    <!-- Farcaster Frame -->
     <meta property="fc:frame" content="vNext">
     <meta property="fc:frame:image" content="https://miniapp-8oc.pages.dev/assets/social-preview.png">
-    <meta property="fc:frame:button:1" content="Open FID Checker">
+    <meta property="fc:frame:image:aspect_ratio" content="1.91:1">
+    <meta property="fc:frame:button:1" content="🔍 Open FID Checker">
     <meta property="fc:frame:button:1:action" content="link">
     <meta property="fc:frame:button:1:target" content="https://miniapp-8oc.pages.dev/">
     <meta property="fc:frame:post_url" content="https://miniapp-8oc.pages.dev/api/frame">
     
-    <!-- Redirect to main app -->
-    <meta http-equiv="refresh" content="0; url=https://miniapp-8oc.pages.dev/">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #6F42C1 0%, #8B5CF6 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .container {
+            max-width: 500px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .logo {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            font-size: 32px;
+            margin-bottom: 16px;
+            font-weight: bold;
+        }
+        
+        .subtitle {
+            font-size: 18px;
+            margin-bottom: 30px;
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+        
+        .features {
+            text-align: left;
+            margin: 30px 0;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 12px;
+        }
+        
+        .feature {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+        
+        .feature:last-child {
+            margin-bottom: 0;
+        }
+        
+        .feature-icon {
+            margin-right: 12px;
+            font-size: 20px;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background: white;
+            color: #6F42C1;
+            padding: 16px 32px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        .url {
+            margin-top: 20px;
+            font-size: 14px;
+            opacity: 0.7;
+            word-break: break-all;
+        }
+    </style>
 </head>
 <body>
-    <div style="text-align: center; padding: 50px; font-family: Arial, sans-serif;">
-        <h1>🔍 FID Checker</h1>
-        <p>Redirecting to FID Checker Mini App...</p>
-        <p>If you are not redirected, <a href="https://miniapp-8oc.pages.dev/">click here</a>.</p>
+    <div class="container">
+        <div class="logo">🔍</div>
+        <h1>FID Checker</h1>
+        <p class="subtitle">Instantly view your Farcaster FID, profile photo, and bio with one-tap copying</p>
+        
+        <div class="features">
+            <div class="feature">
+                <span class="feature-icon">✅</span>
+                Auto-load Farcaster profile data
+            </div>
+            <div class="feature">
+                <span class="feature-icon">✅</span>
+                Display profile photo, FID, username & bio
+            </div>
+            <div class="feature">
+                <span class="feature-icon">✅</span>
+                One-tap FID copying to clipboard
+            </div>
+            <div class="feature">
+                <span class="feature-icon">✅</span>
+                Real-time data refresh
+            </div>
+        </div>
+        
+        <a href="https://miniapp-8oc.pages.dev/" class="cta-button">
+            🔍 Open FID Checker
+        </a>
+        
+        <div class="url">miniapp-8oc.pages.dev</div>
     </div>
-    
+
     <script>
-        window.location.href = 'https://miniapp-8oc.pages.dev/';
+        // Auto-redirect after 3 seconds
+        setTimeout(() => {
+            window.location.href = 'https://miniapp-8oc.pages.dev/';
+        }, 3000);
     </script>
 </body>
 </html>
