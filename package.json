@@ -1,0 +1,32 @@
+{
+  "name": "farcaster-fid-checker",
+  "version": "1.0.0",
+  "description": "Farcaster Mini App to check and copy the user FID",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "serve": "python -m http.server 3000",
+    "start": "npm run dev"
+  },
+  "keywords": [
+    "farcaster",
+    "mini-app",
+    "fid",
+    "blockchain",
+    "social"
+  ],
+  "author": "forger",
+  "license": "MIT",
+  "dependencies": {
+    "@farcaster/miniapp-sdk": "^0.1.0"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=22.11.0",
+    "npm": ">=9.0.0"
+  }
+}
