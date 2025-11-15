@@ -44,7 +44,6 @@ body {
     padding: 24px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
     margin-bottom: 20px;
-    transform: translateZ(0);
 }
 
 .profile-header {
@@ -141,26 +140,23 @@ body {
     padding-top: 16px;
 }
 
-/* FIXED: Username section dengan layout inline yang benar */
-.username-section {
+/* FIXED: Username layout - perfectly inline */
+.detail-row {
     display: flex;
     align-items: center;
-    margin-bottom: 20px;
-    padding: 12px 0;
-    border-bottom: 1px solid #f0f0f0;
+    margin-bottom: 16px;
+    gap: 8px;
 }
 
-.username-label {
+.detail-label {
     font-weight: bold;
     color: #666;
     min-width: 80px;
-    margin-right: 12px;
 }
 
-.username-value {
+.detail-value {
     color: #333;
     font-weight: 500;
-    font-size: 16px;
 }
 
 /* Enhanced Neynar Score Styles */
@@ -170,7 +166,6 @@ body {
     background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
     border-radius: 16px;
     border: 1px solid #e2e8f0;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .neynar-header {
@@ -209,7 +204,6 @@ body {
     font-weight: 800;
     margin-bottom: 12px;
     font-family: 'Courier New', monospace;
-    transition: all 0.3s ease;
 }
 
 /* Score color variations */
@@ -230,8 +224,9 @@ body {
 .score-fill {
     height: 100%;
     border-radius: 8px;
-    transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: width 1.2s ease;
     width: 0%;
+    background: linear-gradient(90deg, #EF4444, #F87171);
 }
 
 .neynar-stats {
@@ -246,12 +241,6 @@ body {
     border-radius: 10px;
     border: 1px solid #f1f5f9;
     text-align: center;
-    transition: transform 0.2s ease;
-}
-
-.stat:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .stat-label {
@@ -261,7 +250,6 @@ body {
     font-weight: 600;
     margin-bottom: 6px;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
 }
 
 .stat-value {
@@ -278,10 +266,6 @@ body {
     font-size: 12px;
 }
 
-.info-footer p {
-    margin: 0;
-}
-
 .toast {
     position: fixed;
     bottom: 20px;
@@ -293,10 +277,8 @@ body {
     border-radius: 10px;
     transition: transform 0.3s ease;
     z-index: 1000;
-    backdrop-filter: blur(10px);
     max-width: 300px;
     text-align: center;
-    font-weight: 500;
 }
 
 .toast.show {
@@ -307,7 +289,7 @@ body {
     background: rgba(220, 38, 38, 0.9);
 }
 
-/* Responsive improvements */
+/* Responsive */
 @media (max-width: 480px) {
     body {
         padding: 15px;
@@ -315,7 +297,6 @@ body {
     
     .profile-card {
         padding: 20px;
-        border-radius: 16px;
     }
     
     .profile-header {
@@ -332,59 +313,21 @@ body {
         flex-direction: column;
     }
     
-    .username-section {
+    .detail-row {
         flex-direction: column;
         align-items: flex-start;
         gap: 4px;
     }
     
-    .username-label {
+    .detail-label {
         min-width: auto;
-        margin-right: 0;
     }
     
     .neynar-stats {
         grid-template-columns: 1fr;
-        gap: 8px;
     }
     
     .neynar-score {
         font-size: 36px;
-    }
-}
-
-/* High contrast mode support */
-@media (prefers-contrast: high) {
-    .profile-card {
-        border: 2px solid #000;
-    }
-    
-    .btn {
-        border: 1px solid;
-    }
-    
-    .neynar-section {
-        border: 2px solid #000;
-    }
-    
-    .stat {
-        border: 1px solid #000;
-    }
-}
-
-/* Reduced motion support */
-@media (prefers-reduced-motion: reduce) {
-    * {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-    }
-    
-    .score-fill {
-        transition: none;
-    }
-    
-    .stat:hover {
-        transform: none;
     }
 }
