@@ -9,7 +9,6 @@ body {
     background: linear-gradient(135deg, #6F42C1 0%, #8B5CF6 100%);
     min-height: 100vh;
     padding: 20px;
-    /* Prevent layout shifts */
     overflow-x: hidden;
 }
 
@@ -45,9 +44,7 @@ body {
     padding: 24px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
     margin-bottom: 20px;
-    /* GPU acceleration */
     transform: translateZ(0);
-    will-change: transform;
 }
 
 .profile-header {
@@ -63,9 +60,6 @@ body {
     border: 4px solid #6F42C1;
     margin-right: 16px;
     object-fit: cover;
-    /* Optimize image rendering */
-    image-rendering: -webkit-optimize-contrast;
-    image-rendering: crisp-edges;
 }
 
 .profile-info h2 {
@@ -113,9 +107,6 @@ body {
     align-items: center;
     justify-content: center;
     gap: 6px;
-    /* Disable text selection */
-    user-select: none;
-    -webkit-user-select: none;
 }
 
 .btn:active {
@@ -143,7 +134,6 @@ body {
 .btn:disabled {
     opacity: 0.6;
     cursor: not-allowed;
-    transform: none;
 }
 
 .user-details {
@@ -151,23 +141,26 @@ body {
     padding-top: 16px;
 }
 
-/* FIXED: Inline detail layout for username */
-.inline-detail {
+/* FIXED: Username section dengan layout inline yang benar */
+.username-section {
     display: flex;
     align-items: center;
-    margin-bottom: 16px;
-    gap: 8px;
+    margin-bottom: 20px;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
 }
 
-.detail-label {
+.username-label {
     font-weight: bold;
     color: #666;
-    flex-shrink: 0;
+    min-width: 80px;
+    margin-right: 12px;
 }
 
-.detail-value {
+.username-value {
     color: #333;
     font-weight: 500;
+    font-size: 16px;
 }
 
 /* Enhanced Neynar Score Styles */
@@ -196,7 +189,6 @@ body {
 .neynar-info {
     color: #64748b;
     cursor: help;
-    font-size: 16px;
     width: 20px;
     height: 20px;
     border-radius: 50%;
@@ -246,7 +238,6 @@ body {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 12px;
-    margin-bottom: 0;
 }
 
 .stat {
@@ -341,10 +332,15 @@ body {
         flex-direction: column;
     }
     
-    .inline-detail {
+    .username-section {
         flex-direction: column;
         align-items: flex-start;
         gap: 4px;
+    }
+    
+    .username-label {
+        min-width: auto;
+        margin-right: 0;
     }
     
     .neynar-stats {
@@ -391,15 +387,4 @@ body {
     .stat:hover {
         transform: none;
     }
-}
-
-/* Loading animations */
-@keyframes pulse {
-    0% { opacity: 1; }
-    50% { opacity: 0.5; }
-    100% { opacity: 1; }
-}
-
-.loading {
-    animation: pulse 1.5s ease-in-out infinite;
 }
