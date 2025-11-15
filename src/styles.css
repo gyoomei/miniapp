@@ -154,7 +154,7 @@ body {
 .detail-item {
     display: flex;
     margin-bottom: 12px;
-    align-items: flex-start;
+    align-items: center;
 }
 
 .detail-label {
@@ -219,6 +219,16 @@ body {
     
     .actions {
         flex-direction: column;
+    }
+    
+    .detail-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .detail-label {
+        min-width: auto;
+        margin-bottom: 4px;
     }
 }
 
