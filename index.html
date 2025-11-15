@@ -12,7 +12,7 @@
     
     <!-- Open Graph Meta Tags -->
     <meta property="og:title" content="FID Checker - Profile Tool">
-    <meta property="og:description" content="View your Farcaster FID, profile photo, and username instantly. Copy FID with one tap!">
+    <meta property="og:description" content="View your Farcaster FID, profile photo, username, Neynar Score and follower stats instantly. Copy FID with one tap!">
     <meta property="og:image" content="https://miniapp-8oc.pages.dev/assets/social-preview.png">
     <meta property="og:url" content="https://miniapp-8oc.pages.dev/">
     <meta property="og:type" content="website">
@@ -21,7 +21,7 @@
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="FID Checker - Profile Tool">
-    <meta name="twitter:description" content="View your Farcaster FID, profile photo, and username instantly. Copy FID with one tap!">
+    <meta name="twitter:description" content="View your Farcaster FID, profile photo, username, Neynar Score and follower stats instantly. Copy FID with one tap!">
     <meta name="twitter:image" content="https://miniapp-8oc.pages.dev/assets/social-preview.png">
     
     <!-- Farcaster Frame Meta Tags -->
@@ -101,7 +101,50 @@
                         <span class="detail-label">Username:</span>
                         <span id="username" class="detail-value">-</span>
                     </div>
+                    
+                    <!-- Enhanced Neynar Score Section -->
+                    <div class="neynar-section">
+                        <div class="neynar-header">
+                            <span class="neynar-label">🏆 Neynar Score</span>
+                            <span class="neynar-info" title="Based on on-chain activity, social graph & engagement">ℹ️</span>
+                        </div>
+                        <div class="neynar-score-container">
+                            <div class="neynar-score" id="neynar-score">-</div>
+                            <div class="score-bar">
+                                <div class="score-fill" id="score-fill"></div>
+                            </div>
+                        </div>
+                        <div class="neynar-stats">
+                            <div class="stat">
+                                <span class="stat-label">Followers</span>
+                                <span class="stat-value" id="follower-count">-</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">Following</span>
+                                <span class="stat-value" id="following-count">-</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">Casts</span>
+                                <span class="stat-value" id="cast-count">-</span>
+                            </div>
+                        </div>
+                        <div class="neynar-extra">
+                            <div class="extra-stat">
+                                <span class="extra-label">Power Badge</span>
+                                <span class="extra-value" id="power-badge">No</span>
+                            </div>
+                            <div class="extra-stat">
+                                <span class="extra-label">Verifications</span>
+                                <span class="extra-value" id="verification-count">0</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+            </div>
+            
+            <!-- Info Footer -->
+            <div class="info-footer">
+                <p>Data provided by Neynar API • Updates automatically</p>
             </div>
         </div>
 
