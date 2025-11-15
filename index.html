@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FID Checker - Farcaster Mini App</title>
+    <title>Farcaster Profile - Mini App</title>
     
     <!-- Preload Critical Resources -->
     <link rel="preload" href="https://esm.sh/@farcaster/miniapp-sdk" as="script">
@@ -11,26 +11,18 @@
     <link rel="dns-prefetch" href="https://esm.sh">
     
     <!-- Open Graph Meta Tags -->
-    <meta property="og:title" content="FID Checker - Profile Tool">
-    <meta property="og:description" content="View your Farcaster FID, profile photo, username, Neynar Score and follower stats instantly. Copy FID with one tap!">
+    <meta property="og:title" content="Farcaster Profile - Mini App">
+    <meta property="og:description" content="View your Farcaster profile, followers, and following stats instantly">
     <meta property="og:image" content="https://miniapp-8oc.pages.dev/assets/social-preview.png">
     <meta property="og:url" content="https://miniapp-8oc.pages.dev/">
     <meta property="og:type" content="website">
-    <meta property="og:site_name" content="FID Checker">
+    <meta property="og:site_name" content="Farcaster Profile">
     
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="FID Checker - Profile Tool">
-    <meta name="twitter:description" content="View your Farcaster FID, profile photo, username, Neynar Score and follower stats instantly. Copy FID with one tap!">
+    <meta name="twitter:title" content="Farcaster Profile - Mini App">
+    <meta name="twitter:description" content="View your Farcaster profile, followers, and following stats instantly">
     <meta name="twitter:image" content="https://miniapp-8oc.pages.dev/assets/social-preview.png">
-    
-    <!-- Farcaster Frame Meta Tags -->
-    <meta property="fc:frame" content="vNext">
-    <meta property="fc:frame:image" content="https://miniapp-8oc.pages.dev/assets/social-preview.png">
-    <meta property="fc:frame:button:1" content="Open FID Checker">
-    <meta property="fc:frame:button:1:action" content="link">
-    <meta property="fc:frame:button:1:target" content="https://miniapp-8oc.pages.dev/">
-    <meta property="fc:frame:post_url" content="https://miniapp-8oc.pages.dev/api/frame">
     
     <link rel="stylesheet" href="src/styles.css">
     
@@ -38,7 +30,7 @@
     <style>
         .critical-loading {
             min-height: 100vh;
-            background: linear-gradient(135deg, #6F42C1 0%, #8B5CF6 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -61,23 +53,31 @@
     <!-- Critical Loading State -->
     <div id="critical-loading" class="critical-loading">
         <div style="text-align: center; padding: 20px;">
-            <div class="skeleton" style="width: 60px; height: 60px; border-radius: 50%; margin: 0 auto 15px;"></div>
-            <div class="skeleton" style="width: 150px; height: 20px; margin: 10px auto;"></div>
-            <div class="skeleton" style="width: 100px; height: 16px; margin: 5px auto;"></div>
+            <div class="skeleton" style="width: 80px; height: 80px; border-radius: 50%; margin: 0 auto 20px;"></div>
+            <div class="skeleton" style="width: 160px; height: 24px; margin: 15px auto;"></div>
+            <div class="skeleton" style="width: 120px; height: 18px; margin: 10px auto;"></div>
         </div>
     </div>
 
     <!-- Main App (Hidden Initially) -->
     <div id="app-content" style="display: none;">
         <div class="container">
+            <!-- Header -->
             <div class="header">
-                <h1>🔍 Farcaster ID Checker</h1>
-                <p>Your Farcaster profile information</p>
+                <div class="header-content">
+                    <h1>👤 Farcaster Profile</h1>
+                    <p>Your social stats at a glance</p>
+                </div>
             </div>
 
+            <!-- Profile Card -->
             <div class="profile-card">
+                <!-- Profile Header -->
                 <div class="profile-header">
-                    <img id="profile-picture" src="" alt="Profile Picture" class="profile-pic">
+                    <div class="avatar-section">
+                        <img id="profile-picture" src="" alt="Profile Picture" class="profile-avatar">
+                        <div class="online-indicator"></div>
+                    </div>
                     <div class="profile-info">
                         <h2 id="display-name">Loading...</h2>
                         <div class="fid-section">
@@ -87,58 +87,60 @@
                     </div>
                 </div>
 
-                <div class="actions">
-                    <button id="copy-fid-btn" class="btn btn-primary">
-                        📋 Copy FID
-                    </button>
-                    <button id="refresh-btn" class="btn btn-secondary">
-                        🔄 Refresh
-                    </button>
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="follower-count">-</div>
+                            <div class="stat-label">Followers</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🔄</div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="following-count">-</div>
+                            <div class="stat-label">Following</div>
+                        </div>
+                    </div>
                 </div>
 
+                <!-- User Details -->
                 <div class="user-details">
-                    <!-- Fixed Username Layout - Inline -->
-                    <div class="detail-row">
-                        <span class="detail-label">Username:</span>
+                    <div class="detail-item">
+                        <span class="detail-label">Username</span>
                         <span id="username" class="detail-value">-</span>
                     </div>
-                    
-                    <!-- Enhanced Neynar Score Section -->
-                    <div class="neynar-section">
-                        <div class="neynar-header">
-                            <span class="neynar-label">🏆 Neynar Score</span>
-                            <span class="neynar-info" title="Based on on-chain activity, social graph & engagement">ℹ️</span>
-                        </div>
-                        <div class="neynar-score-container">
-                            <div class="neynar-score" id="neynar-score">-</div>
-                            <div class="score-bar">
-                                <div class="score-fill" id="score-fill"></div>
-                            </div>
-                        </div>
-                        <div class="neynar-stats">
-                            <div class="stat">
-                                <span class="stat-label">Followers</span>
-                                <span class="stat-value" id="follower-count">-</span>
-                            </div>
-                            <div class="stat">
-                                <span class="stat-label">Following</span>
-                                <span class="stat-value" id="following-count">-</span>
-                            </div>
-                        </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Account</span>
+                        <span class="detail-value badge">Active</span>
                     </div>
                 </div>
+
+                <!-- Actions -->
+                <div class="actions">
+                    <button id="copy-fid-btn" class="btn btn-primary">
+                        <span class="btn-icon">📋</span>
+                        Copy FID
+                    </button>
+                    <button id="refresh-btn" class="btn btn-secondary">
+                        <span class="btn-icon">🔄</span>
+                        Refresh
+                    </button>
+                </div>
             </div>
-            
+
             <!-- Info Footer -->
             <div class="info-footer">
-                <p>Data provided by Neynar API • Updates automatically</p>
+                <p>Connected to Farcaster • Real-time data</p>
             </div>
         </div>
 
+        <!-- Toast Notification -->
         <div id="toast" class="toast">FID copied to clipboard!</div>
     </div>
 
-    <!-- Load Optimized App -->
+    <!-- Load App -->
     <script type="module" src="src/app.js"></script>
 </body>
 </html>
