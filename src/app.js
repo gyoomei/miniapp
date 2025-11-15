@@ -1,258 +1,249 @@
-// Enhanced Farcaster Mini App with robust SDK handling
-console.log('🚀 Farcaster Mini App Starting...');
+// ULTRA FAST Farcaster Mini App
+console.log('🚀 Starting Ultra Fast Farcaster Mini App...');
 
-// Global variable to track SDK status
-window.farcasterSDKReady = false;
-window.appInitialized = false;
+// Global state management
+window.appState = {
+    sdk: null,
+    user: null,
+    initialized: false,
+    readyCalled: false
+};
 
-// Method 1: Direct SDK import with fallback
-async function initializeFarcasterSDK() {
-    try {
-        console.log('📦 Importing Farcaster SDK...');
-        
-        // Try to import the SDK
-        const { sdk } = await import('https://esm.sh/@farcaster/miniapp-sdk');
-        console.log('✅ SDK imported via CDN');
-        return sdk;
-    } catch (error) {
-        console.error('❌ CDN import failed, trying local:', error);
-        
-        try {
-            // Fallback to local import
-            const { sdk } = await import('@farcaster/miniapp-sdk');
-            console.log('✅ SDK imported locally');
+// Ultra fast SDK loader with multiple fallbacks
+async function loadSDKUltraFast() {
+    const loaders = [
+        // Primary: CDN with timeout
+        async () => {
+            const { sdk } = await import('https://esm.sh/@farcaster/miniapp-sdk');
+            console.log('✅ SDK loaded via CDN');
             return sdk;
-        } catch (localError) {
-            console.error('❌ All SDK imports failed:', localError);
-            throw new Error('Cannot load Farcaster SDK');
+        },
+        // Secondary: Local with timeout
+        async () => {
+            const { sdk } = await import('@farcaster/miniapp-sdk');
+            console.log('✅ SDK loaded locally');
+            return sdk;
+        },
+        // Tertiary: Global SDK
+        async () => {
+            if (window.sdk) {
+                console.log('✅ SDK loaded from global');
+                return window.sdk;
+            }
+            throw new Error('No SDK available');
         }
+    ];
+
+    for (const loader of loaders) {
+        try {
+            // Add timeout to each loader
+            const sdk = await Promise.race([
+                loader(),
+                new Promise((_, reject) => 
+                    setTimeout(() => reject(new Error('Timeout')), 2000)
+                )
+            ]);
+            return sdk;
+        } catch (error) {
+            console.warn(`Loader failed:`, error.message);
+            continue;
+        }
+    }
+    
+    throw new Error('All SDK loaders failed');
+}
+
+// CRITICAL: Call ready ASAP to hide splash screen
+async function callReadyImmediately(sdk) {
+    if (window.appState.readyCalled) return;
+    
+    try {
+        console.log('🚀 Calling ready() immediately...');
+        await sdk.actions.ready();
+        window.appState.readyCalled = true;
+        console.log('✅ ready() called successfully');
+    } catch (error) {
+        console.warn('⚠️ ready() failed, will retry:', error);
+        // Don't throw, continue with app
     }
 }
 
-// Method 2: Wait for SDK to be truly ready
-function waitForSDKReady(sdk, timeout = 5000) {
-    return new Promise((resolve, reject) => {
-        console.log('⏳ Waiting for SDK to be ready...');
+// Parallel data fetching
+async function fetchAllUserData(sdk) {
+    try {
+        console.log('📥 Fetching user data in parallel...');
         
-        const startTime = Date.now();
-        const checkInterval = setInterval(() => {
-            if (sdk.isReady) {
-                clearInterval(checkInterval);
-                console.log('✅ SDK is ready!');
-                window.farcasterSDKReady = true;
-                resolve(sdk);
-            } else if (Date.now() - startTime > timeout) {
-                clearInterval(checkInterval);
-                console.warn('⚠️ SDK ready timeout, continuing anyway...');
-                window.farcasterSDKReady = true;
-                resolve(sdk); // Resolve anyway to prevent blocking
+        // Get context first (most critical)
+        const context = await sdk.context;
+        if (!context?.user) {
+            throw new Error('No user data in context');
+        }
+
+        // Show immediate UI update with basic data
+        updateUIImmediately(context.user);
+        
+        // Try to get enhanced profile data in background
+        setTimeout(async () => {
+            try {
+                if (context.user.fid) {
+                    const enhancedProfile = await sdk.lookupUserByFid(context.user.fid);
+                    updateUIWithEnhancedData(enhancedProfile);
+                    cacheUserData(enhancedProfile);
+                }
+            } catch (error) {
+                console.log('ℹ️ Enhanced profile not available, using basic data');
             }
         }, 100);
-    });
-}
 
-// Method 3: Force call ready() with multiple attempts
-async function callReadyAction(sdk, maxAttempts = 3) {
-    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-        try {
-            console.log(`🔄 Calling sdk.actions.ready() - Attempt ${attempt}`);
-            await sdk.actions.ready();
-            console.log('✅ sdk.actions.ready() successful!');
-            return true;
-        } catch (error) {
-            console.error(`❌ ready() attempt ${attempt} failed:`, error);
-            
-            if (attempt === maxAttempts) {
-                console.error('🚨 All ready() attempts failed');
-                return false;
-            }
-            
-            // Wait before retry
-            await new Promise(resolve => setTimeout(resolve, 500));
-        }
-    }
-}
-
-// Main app initialization
-async function initializeApp() {
-    if (window.appInitialized) {
-        console.log('🔄 App already initialized');
-        return;
-    }
-
-    try {
-        console.log('🎯 Starting app initialization...');
-        
-        // Step 1: Load SDK
-        const sdk = await initializeFarcasterSDK();
-        window.farcasterSDK = sdk;
-        
-        // Step 2: Wait for SDK readiness
-        await waitForSDKReady(sdk);
-        
-        // Step 3: Load user data
-        await loadUserData(sdk);
-        
-        // Step 4: Setup event listeners
-        setupEventListeners();
-        
-        // Step 5: CRITICAL - Call ready() to hide splash screen
-        const readySuccess = await callReadyAction(sdk);
-        
-        if (readySuccess) {
-            console.log('🎉 App initialized successfully!');
-            window.appInitialized = true;
-        } else {
-            console.warn('⚠️ App initialized but ready() failed');
-            window.appInitialized = true;
-        }
+        cacheUserData(context.user);
+        return context.user;
         
     } catch (error) {
-        console.error('💥 App initialization failed:', error);
-        emergencyFallback();
+        console.error('Error fetching user data:', error);
+        throw error;
     }
 }
 
-// Load user data
-async function loadUserData(sdk) {
+// Immediate UI update with basic data
+function updateUIImmediately(user) {
     try {
-        console.log('👤 Loading user data...');
-        const context = await sdk.context;
-        console.log('📋 User context:', context);
+        // Show main app content
+        document.getElementById('critical-loading').style.display = 'none';
+        document.getElementById('app-content').style.display = 'block';
         
-        if (context && context.user) {
-            updateUserInterface(context.user);
-        } else {
-            showErrorMessage('No user data available');
+        // Update critical fields first
+        if (user.displayName) {
+            document.getElementById('display-name').textContent = user.displayName;
         }
-    } catch (error) {
-        console.error('Error loading user data:', error);
-        showErrorMessage('Cannot access user profile');
-    }
-}
-
-// Update UI with user data
-function updateUserInterface(user) {
-    try {
-        console.log('🎨 Updating UI with user data...');
         
-        // Profile picture
+        if (user.fid) {
+            document.getElementById('fid-value').textContent = user.fid;
+            window.currentFID = user.fid;
+        }
+        
+        // Profile picture with error handling
         const profilePic = document.getElementById('profile-picture');
         if (user.pfpUrl) {
             profilePic.src = user.pfpUrl;
             profilePic.style.display = 'block';
-            console.log('🖼️ Profile picture loaded:', user.pfpUrl);
-        } else {
-            profilePic.style.display = 'none';
-        }
-
-        // Display name
-        const displayName = document.getElementById('display-name');
-        displayName.textContent = user.displayName || 'Anonymous User';
-
-        // FID
-        const fidValue = document.getElementById('fid-value');
-        fidValue.textContent = user.fid || 'N/A';
-        window.currentFID = user.fid;
-        console.log('🔢 FID loaded:', user.fid);
-
-        // Username
-        const username = document.getElementById('username');
-        username.textContent = user.username || 'Not set';
-
-        // Bio - Improved handling
-        const bio = document.getElementById('bio');
-        if (user.bio && user.bio.trim().length > 0) {
-            bio.textContent = user.bio;
-            console.log('📝 Bio loaded:', user.bio);
-        } else {
-            bio.textContent = '🌟 Bio is empty - tell us about yourself!';
-            bio.style.fontStyle = 'italic';
-            bio.style.opacity = '0.7';
+            profilePic.onerror = () => {
+                profilePic.style.display = 'none';
+            };
         }
         
     } catch (error) {
-        console.error('Error updating UI:', error);
+        console.error('Error in immediate UI update:', error);
     }
 }
 
-// Setup event listeners
+// Enhanced UI update with additional data
+function updateUIWithEnhancedData(profile) {
+    try {
+        if (profile.username) {
+            document.getElementById('username').textContent = profile.username;
+        }
+        
+        const bioElement = document.getElementById('bio');
+        if (profile.bio && profile.bio.trim()) {
+            bioElement.textContent = profile.bio;
+        } else {
+            bioElement.textContent = '🌟 Bio is empty - tell us about yourself!';
+            bioElement.style.fontStyle = 'italic';
+            bioElement.style.opacity = '0.7';
+        }
+    } catch (error) {
+        console.error('Error in enhanced UI update:', error);
+    }
+}
+
+// Cache system for instant loads
+function cacheUserData(user) {
+    try {
+        localStorage.setItem('farcaster-user-cache', JSON.stringify({
+            user: user,
+            timestamp: Date.now()
+        }));
+    } catch (error) {
+        console.warn('Cannot cache user data:', error);
+    }
+}
+
+function getCachedUserData() {
+    try {
+        const cached = localStorage.getItem('farcaster-user-cache');
+        if (cached) {
+            const { user, timestamp } = JSON.parse(cached);
+            // Use cache if less than 5 minutes old
+            if (Date.now() - timestamp < 5 * 60 * 1000) {
+                return user;
+            }
+        }
+    } catch (error) {
+        console.warn('Cannot read cache:', error);
+    }
+    return null;
+}
+
+// Event listeners setup
 function setupEventListeners() {
-    try {
-        console.log('🔗 Setting up event listeners...');
-        
-        // Copy FID button
-        const copyBtn = document.getElementById('copy-fid-btn');
-        copyBtn.addEventListener('click', copyFIDToClipboard);
+    // Copy FID with enhanced feedback
+    document.getElementById('copy-fid-btn').addEventListener('click', async () => {
+        if (!window.currentFID) {
+            showToast('No FID available to copy', 'error');
+            return;
+        }
 
-        // Refresh button
-        const refreshBtn = document.getElementById('refresh-btn');
-        refreshBtn.addEventListener('click', refreshData);
+        try {
+            await navigator.clipboard.writeText(window.currentFID.toString());
+            
+            const btn = document.getElementById('copy-fid-btn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '✅ Copied!';
+            btn.style.background = '#10B981';
+            
+            showToast('FID copied to clipboard!');
+            
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.style.background = '';
+            }, 2000);
+            
+        } catch (error) {
+            // Fallback copy method
+            const textArea = document.createElement('textarea');
+            textArea.value = window.currentFID.toString();
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            showToast('FID copied to clipboard!');
+        }
+    });
+
+    // Refresh with visual feedback
+    document.getElementById('refresh-btn').addEventListener('click', async () => {
+        const btn = document.getElementById('refresh-btn');
+        const originalText = btn.innerHTML;
         
-        console.log('✅ Event listeners setup complete');
-    } catch (error) {
-        console.error('Error setting up event listeners:', error);
-    }
+        btn.innerHTML = '🔄 Refreshing...';
+        btn.disabled = true;
+        
+        try {
+            localStorage.removeItem('farcaster-user-cache');
+            await initializeApp();
+            showToast('Data refreshed!');
+        } catch (error) {
+            showToast('Refresh failed', 'error');
+        } finally {
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }, 1000);
+        }
+    });
 }
 
-// Copy FID to clipboard
-async function copyFIDToClipboard() {
-    if (!window.currentFID) {
-        showToast('No FID available to copy', 'error');
-        return;
-    }
-
-    try {
-        await navigator.clipboard.writeText(window.currentFID.toString());
-        showToast('FID copied to clipboard! ✅');
-        
-        const copyBtn = document.getElementById('copy-fid-btn');
-        const originalText = copyBtn.innerHTML;
-        copyBtn.innerHTML = '✅ Copied!';
-        
-        setTimeout(() => {
-            copyBtn.innerHTML = originalText;
-        }, 2000);
-        
-    } catch (error) {
-        console.error('Copy failed:', error);
-        fallbackCopyFID();
-    }
-}
-
-// Fallback copy method
-function fallbackCopyFID() {
-    const textArea = document.createElement('textarea');
-    textArea.value = window.currentFID.toString();
-    document.body.appendChild(textArea);
-    textArea.select();
-    
-    try {
-        document.execCommand('copy');
-        showToast('FID copied to clipboard! ✅');
-    } catch (error) {
-        showToast('Failed to copy FID', 'error');
-    }
-    
-    document.body.removeChild(textArea);
-}
-
-// Refresh data
-async function refreshData() {
-    const refreshBtn = document.getElementById('refresh-btn');
-    refreshBtn.innerHTML = '🔄 Refreshing...';
-    refreshBtn.disabled = true;
-    
-    if (window.farcasterSDK) {
-        await loadUserData(window.farcasterSDK);
-    }
-    
-    refreshBtn.innerHTML = '🔄 Refresh';
-    refreshBtn.disabled = false;
-    showToast('Data refreshed!');
-}
-
-// Show toast message
+// Toast notification system
 function showToast(message, type = 'success') {
     try {
         const toast = document.getElementById('toast');
@@ -264,91 +255,67 @@ function showToast(message, type = 'success') {
             toast.classList.remove('show');
         }, 3000);
     } catch (error) {
-        console.error('Error showing toast:', error);
+        console.error('Toast error:', error);
     }
 }
 
-// Show error message
-function showErrorMessage(message) {
-    console.error('App Error:', message);
-    showToast(message, 'error');
+// MAIN INITIALIZATION - ULTRA FAST
+async function initializeApp() {
+    if (window.appState.initialized) return;
     
     try {
-        document.getElementById('display-name').textContent = 'Error Loading Data';
-        document.getElementById('fid-value').textContent = '---';
-        document.getElementById('username').textContent = 'Error';
-        document.getElementById('bio').textContent = message;
+        console.log('🎯 Starting ultra fast initialization...');
+        
+        // Step 1: Try cached data first for instant display
+        const cachedUser = getCachedUserData();
+        if (cachedUser) {
+            console.log('⚡ Using cached user data for instant display');
+            updateUIImmediately(cachedUser);
+        }
+        
+        // Step 2: Load SDK and call ready() in parallel with data fetching
+        const sdk = await loadSDKUltraFast();
+        window.appState.sdk = sdk;
+        
+        // Step 3: CRITICAL - Call ready() immediately to hide splash screen
+        callReadyImmediately(sdk);
+        
+        // Step 4: Fetch fresh data
+        await fetchAllUserData(sdk);
+        
+        // Step 5: Setup interactions
+        setupEventListeners();
+        
+        window.appState.initialized = true;
+        console.log('🎉 App fully initialized!');
+        
     } catch (error) {
-        console.error('Error updating error UI:', error);
+        console.error('💥 Initialization error:', error);
+        
+        // Emergency: Ensure app content is visible even on error
+        document.getElementById('critical-loading').style.display = 'none';
+        document.getElementById('app-content').style.display = 'block';
+        
+        showToast('Loading issue - using basic mode', 'error');
     }
 }
 
-// EMERGENCY FALLBACK: Last resort to hide splash screen
-async function emergencyFallback() {
-    console.log('🆘 EMERGENCY FALLBACK ACTIVATED');
-    
-    // Try multiple methods to call ready()
-    const methods = [
-        // Method 1: Direct SDK call
-        async () => {
-            if (window.farcasterSDK && window.farcasterSDK.actions) {
-                await window.farcasterSDK.actions.ready();
-                return true;
-            }
-            return false;
-        },
-        // Method 2: Global SDK object
-        async () => {
-            if (window.sdk && window.sdk.actions) {
-                await window.sdk.actions.ready();
-                return true;
-            }
-            return false;
-        },
-        // Method 3: Try to access via import
-        async () => {
-            try {
-                const { sdk } = await import('@farcaster/miniapp-sdk');
-                await sdk.actions.ready();
-                return true;
-            } catch (e) {
-                return false;
-            }
-        }
-    ];
-    
-    for (const method of methods) {
-        try {
-            const success = await method();
-            if (success) {
-                console.log('🆘 Emergency ready() successful!');
-                return;
-            }
-        } catch (error) {
-            console.error('Emergency method failed:', error);
-        }
-    }
-    
-    console.error('🚨 ALL EMERGENCY METHODS FAILED');
-}
-
-// Start the app when DOM is ready
+// Start app immediately - don't wait for DOMContentLoaded
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initializeApp);
 } else {
     initializeApp();
 }
 
-// Final fallback: Call ready after 5 seconds no matter what
-setTimeout(async () => {
-    if (!window.appInitialized) {
-        console.log('⏰ FINAL FALLBACK: 5 second timeout reached');
-        await emergencyFallback();
-        window.appInitialized = true;
+// Final safety net - ensure ready is called within 3 seconds
+setTimeout(() => {
+    if (!window.appState.readyCalled && window.appState.sdk) {
+        console.log('🆘 Safety net: forcing ready() call');
+        callReadyImmediately(window.appState.sdk);
     }
-}, 5000);
+}, 3000);
 
-// Global error handler
+// Global error handling
 window.addEventListener('error', (event) => {
-    console.error('🌍 Global error:', event.error);
+    console.error('Global error:', event.error);
 });
