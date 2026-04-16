@@ -1,0 +1,30 @@
+{
+  "frame": {
+    "name": "Neynar Score Pulse",
+    "version": "1",
+    "iconUrl": "https://miniapp-j9rw.vercel.app/icon-1024.png",
+    "homeUrl": "https://miniapp-j9rw.vercel.app",
+    "imageUrl": "https://miniapp-j9rw.vercel.app/icon-1024.png",
+    "buttonTitle": "Open app",
+    "splashImageUrl": "https://miniapp-j9rw.vercel.app/splash-200.png",
+    "splashBackgroundColor": "#0F172A",
+    "subtitle": "Live Farcaster score",
+    "description": "Check your Farcaster profile and Neynar score.",
+    "primaryCategory": "social",
+    "screenshotUrls": [
+      "https://miniapp-j9rw.vercel.app/screenshot1.png"
+    ],
+    "heroImageUrl": "https://miniapp-j9rw.vercel.app/hero-image.png",
+    "tags": [],
+    "ogTitle": "Neynar Score Pulse",
+    "tagline": "Check your live Neynar score",
+    "ogDescription": "View your Farcaster profile and live Neynar score.",
+    "ogImageUrl": "https://miniapp-j9rw.vercel.app/screenshot1.png",
+    "castShareUrl": "https://miniapp-j9rw.vercel.app"
+  },
+  "accountAssociation": {
+    "header": "eyJmaWQiOjI0MTQ3MCwidHlwZSI6ImF1dGgiLCJrZXkiOiIweDkyQzgyNTIwOTA3YjZDZmU2MUUzNjNmZTBFOWY2QjdjODJmQzdENTkifQ",
+    "payload": "eyJkb21haW4iOiJtaW5pYXBwLWo5cncudmVyY2VsLmFwcCJ9",
+    "signature": "23f+r0YlMPQAcxRYvFOYqYqhRkVBO676yQl9DNM8Uud8tanCOa7JMHHBV8/upcX50n6/zfLLlWIBnSKEAlvgtxw="
+  }
+}
