@@ -36,9 +36,6 @@ const els = {
   gameScore: $('game-score'),
   bestScore: $('best-score'),
   gameStatus: $('game-status'),
-  claimableScore: $('claimable-score'),
-  claimBtn: $('claim-btn'),
-  claimStatus: $('claim-status'),
   player: $('player'),
   obstacle: $('obstacle'),
   message: $('message'),
@@ -132,10 +129,6 @@ function resetGameState() {
   els.message.classList.add('show');
 }
 function setGameStatus(text) { els.gameStatus.textContent = text; }
-function updateClaimUI() {
-  const claimable = Math.max(0, Math.floor(state.game.best / 10));
-  els.claimableScore.textContent = `${claimable} DEGEN`;
-}
 function jump() {
   const g = state.game;
   if (!g.running || g.jumping) return;
@@ -159,7 +152,6 @@ function endGame() {
     g.best = g.score;
     localStorage.setItem('mini-dino-best', String(g.best));
     els.bestScore.textContent = String(g.best);
-    updateClaimUI();
   }
   setGameStatus('Crashed');
   els.message.textContent = 'Game Over';
@@ -209,7 +201,6 @@ window.addEventListener('keydown', (e) => {
 });
 
 els.bestScore.textContent = String(state.game.best);
-updateClaimUI();
 renderCheckIn();
 updateCountdown();
 setCheckInStatus('Waiting for wallet connection');
@@ -217,12 +208,3 @@ setGameStatus('Ready');
 resetGameState();
 setInterval(updateCountdown, 1000);
 setActiveIndex(0);
-
-els.claimBtn.addEventListener('click', () => {
-  const claimable = Math.max(0, Math.floor(state.game.best / 10));
-  if (!claimable) {
-    els.claimStatus.textContent = 'Raise your best score first to unlock claimable DEGEN.';
-    return;
-  }
-  els.claimStatus.textContent = `Claim flow placeholder: ${claimable} DEGEN ready for future Base contract.`;
-});
