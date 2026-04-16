@@ -1,133 +1,111 @@
 import './styles.css';
 
-const scoreEl = document.getElementById('score');
-const bestEl = document.getElementById('best-score');
-const statusEl = document.getElementById('status');
-const playerEl = document.getElementById('player');
-const obstacleEl = document.getElementById('obstacle');
-const messageEl = document.getElementById('message');
-const startBtn = document.getElementById('start-btn');
-const jumpBtn = document.getElementById('jump-btn');
-const restartBtn = document.getElementById('restart-btn');
-const gameEl = document.getElementById('game');
-
 const state = {
-  running: false,
-  jumping: false,
-  score: 0,
-  best: Number(localStorage.getItem('mini-dino-best') || 0),
-  speed: 6,
-  obstacleX: 520,
-  playerY: 0,
-  velocityY: 0,
-  gravity: 0.9,
-  frame: null,
+  wallet: null,
+  streak: Number(localStorage.getItem('base-checkin-streak') || 0),
+  points: Number(localStorage.getItem('base-checkin-points') || 0),
+  lastCheckIn: Number(localStorage.getItem('base-checkin-last') || 0),
 };
 
-bestEl.textContent = state.best;
+const els = {
+  walletStatus: document.getElementById('wallet-status'),
+  streak: document.getElementById('streak'),
+  points: document.getElementById('points'),
+  countdown: document.getElementById('countdown'),
+  connectBtn: document.getElementById('connect-btn'),
+  checkinBtn: document.getElementById('checkin-btn'),
+  status: document.getElementById('status'),
+};
+
+function render() {
+  els.walletStatus.textContent = state.wallet || 'Not connected';
+  els.streak.textContent = String(state.streak);
+  els.points.textContent = String(state.points);
+}
 
 function setStatus(text) {
-  statusEl.textContent = text;
+  els.status.textContent = text;
 }
 
-function resetPositions() {
-  state.score = 0;
-  state.speed = 6;
-  state.obstacleX = 520;
-  state.playerY = 0;
-  state.velocityY = 0;
-  state.jumping = false;
-  scoreEl.textContent = '0';
-  playerEl.style.bottom = '18px';
-  obstacleEl.style.transform = `translateX(${state.obstacleX}px)`;
+function getNextResetMs() {
+  if (!state.lastCheckIn) return 0;
+  return Math.max(0, state.lastCheckIn + 24 * 60 * 60 * 1000 - Date.now());
 }
 
-function jump() {
-  if (!state.running || state.jumping) return;
-  state.jumping = true;
-  state.velocityY = 14;
-}
-
-function endGame() {
-  state.running = false;
-  setStatus('Crashed');
-  messageEl.textContent = 'Game Over';
-  messageEl.classList.add('show');
-  if (state.score > state.best) {
-    state.best = state.score;
-    localStorage.setItem('mini-dino-best', String(state.best));
-    bestEl.textContent = String(state.best);
+function updateCountdown() {
+  const diff = getNextResetMs();
+  if (!diff) {
+    els.countdown.textContent = 'Ready now';
+    return;
   }
-  cancelAnimationFrame(state.frame);
+  const h = String(Math.floor(diff / 3600000)).padStart(2, '0');
+  const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
+  const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
+  els.countdown.textContent = `${h}:${m}:${s}`;
 }
 
-function checkCollision() {
-  const obstacleLeft = state.obstacleX;
-  const obstacleRight = state.obstacleX + 24;
-  const playerLeft = 54;
-  const playerRight = 90;
-  const playerBottom = 18 + state.playerY;
-  return obstacleRight > playerLeft && obstacleLeft < playerRight && playerBottom < 58;
+function persist() {
+  localStorage.setItem('base-checkin-streak', String(state.streak));
+  localStorage.setItem('base-checkin-points', String(state.points));
+  localStorage.setItem('base-checkin-last', String(state.lastCheckIn));
 }
 
-function loop() {
-  if (!state.running) return;
-
-  state.obstacleX -= state.speed;
-  if (state.obstacleX < -40) {
-    state.obstacleX = 520 + Math.random() * 120;
-    state.score += 1;
-    state.speed = Math.min(13, state.speed + 0.18);
-    scoreEl.textContent = String(state.score);
-  }
-
-  if (state.jumping) {
-    state.playerY += state.velocityY;
-    state.velocityY -= state.gravity;
-    if (state.playerY <= 0) {
-      state.playerY = 0;
-      state.velocityY = 0;
-      state.jumping = false;
+async function connectWallet() {
+  try {
+    if (window.ethereum?.request) {
+      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      state.wallet = accounts?.[0] || null;
+      render();
+      setStatus(state.wallet ? 'Wallet connected, ready to check in' : 'Wallet connection failed');
+      return;
     }
+    state.wallet = 'Demo wallet connected';
+    render();
+    setStatus('Demo mode connected, wallet SDK next');
+  } catch (error) {
+    console.error(error);
+    setStatus('Wallet connect failed');
   }
+}
 
-  obstacleEl.style.transform = `translateX(${state.obstacleX}px)`;
-  playerEl.style.bottom = `${18 + state.playerY}px`;
+function applyCheckIn() {
+  const now = Date.now();
+  const day = 24 * 60 * 60 * 1000;
+  const diff = now - state.lastCheckIn;
 
-  if (checkCollision()) {
-    endGame();
+  if (state.lastCheckIn && diff < day) {
+    setStatus('Already checked in, wait for next window');
     return;
   }
 
-  state.frame = requestAnimationFrame(loop);
-}
-
-function startGame() {
-  resetPositions();
-  state.running = true;
-  setStatus('Running');
-  messageEl.textContent = '';
-  messageEl.classList.remove('show');
-  cancelAnimationFrame(state.frame);
-  loop();
-}
-
-startBtn.addEventListener('click', startGame);
-restartBtn.addEventListener('click', startGame);
-jumpBtn.addEventListener('click', jump);
-gameEl.addEventListener('click', () => {
-  if (!state.running) {
-    startGame();
+  if (!state.lastCheckIn || diff <= day * 2) {
+    state.streak += 1;
   } else {
-    jump();
+    state.streak = 1;
   }
-});
-window.addEventListener('keydown', (event) => {
-  if (event.code === 'Space' || event.code === 'ArrowUp') {
-    event.preventDefault();
-    if (!state.running) startGame(); else jump();
+
+  let reward = 10;
+  if (state.streak % 7 === 0) reward += 30;
+  if (state.streak % 30 === 0) reward += 150;
+
+  state.points += reward;
+  state.lastCheckIn = now;
+  persist();
+  render();
+  updateCountdown();
+  setStatus(`Checked in successfully, +${reward} points`);
+}
+
+els.connectBtn.addEventListener('click', connectWallet);
+els.checkinBtn.addEventListener('click', () => {
+  if (!state.wallet) {
+    setStatus('Connect wallet first');
+    return;
   }
+  setStatus('MVP simulation: contract call placeholder');
+  setTimeout(applyCheckIn, 500);
 });
 
-setStatus('Ready');
-obstacleEl.style.transform = `translateX(${state.obstacleX}px)`;
+render();
+updateCountdown();
+setInterval(updateCountdown, 1000);
