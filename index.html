@@ -2,33 +2,33 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
     <title>Base Check-in + Dino Game</title>
-    <meta name="description" content="Modern mini app with bottom tabs for Base check-in and a simple game." />
+    <meta name="description" content="Simple modern mini app with check-in and a dino game." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    <script type="module" crossorigin src="/assets/index-yUD9fm-p.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-BjA2k8t0.css">
+    <script type="module" crossorigin src="/assets/index-BwaeVcgi.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-D4iKagCl.css">
   </head>
   <body>
     <main class="app-shell">
       <section id="swipe-area" class="swipe-area">
         <div id="track" class="track">
           <section class="screen">
-            <div class="hero-card">
-              <span class="eyebrow">Base Daily Check-in</span>
+            <div class="hero-card compact">
+              <span class="eyebrow">Base Check-in</span>
               <h1>Daily streaks.</h1>
-              <p>Swipe left for the game, or use the bottom tab bar.</p>
+              <p>Swipe for game.</p>
             </div>
 
-            <div class="stats-row">
+            <div class="stats-row compact-row">
               <article class="mini-card"><span>Streak</span><strong id="streak">0</strong></article>
               <article class="mini-card"><span>Points</span><strong id="points">0</strong></article>
               <article class="mini-card"><span>Ready</span><strong id="countdown">--:--</strong></article>
             </div>
 
-            <div class="panel">
+            <div class="panel compact-panel">
               <div class="panel-row">
                 <div>
                   <div class="muted">Wallet</div>
@@ -37,8 +37,9 @@
                 <button id="connect-btn" class="btn ghost">Connect</button>
               </div>
 
-              <div class="info-grid">
-                <div><span class="muted">Reward</span><div class="value small">10 pts + streak bonus</div></div>
+              <div class="reward-line">
+                <span class="muted">Reward</span>
+                <span class="value small">10 pts + bonus</span>
               </div>
 
               <button id="checkin-btn" class="btn primary big">Check in now</button>
@@ -47,19 +48,22 @@
           </section>
 
           <section class="screen">
-            <div class="hero-card">
+            <div class="hero-card compact">
               <span class="eyebrow">Mini Dino Dash</span>
-              <h1>Tap. Jump. Survive.</h1>
-              <p>Swipe right to go back.</p>
+              <h1>Tap and survive.</h1>
+              <p>Swipe back anytime.</p>
             </div>
 
-            <div class="stats-row">
-              <article class="mini-card"><span>Score</span><strong id="game-score">0</strong></article>
-              <article class="mini-card"><span>Best</span><strong id="best-score">0</strong></article>
-              <article class="mini-card"><span>Status</span><strong id="game-status">Ready</strong></article>
+            <div class="stats-row compact-row two-up">
+              <article class="mini-card score-card"><span>Score</span><strong id="game-score">0</strong></article>
+              <article class="mini-card score-card"><span>Best</span><strong id="best-score">0</strong></article>
             </div>
 
-            <div class="panel game-panel">
+            <div class="panel compact-panel game-panel">
+              <div class="game-topline">
+                <span class="muted">Status</span>
+                <span id="game-status" class="value small">Ready</span>
+              </div>
               <div id="game" class="game-area" aria-label="Mini Dino Dash game area">
                 <div class="sky"></div>
                 <div class="ground-line"></div>
@@ -67,7 +71,6 @@
                 <div id="obstacle" class="obstacle"></div>
                 <div id="message" class="message show">Tap Start</div>
               </div>
-
               <div class="game-controls">
                 <button id="start-btn" class="btn primary">Start</button>
                 <button id="jump-btn" class="btn ghost">Jump</button>
@@ -80,14 +83,8 @@
     </main>
 
     <nav class="bottom-nav">
-      <button class="nav-item active" data-tab="0">
-        <span class="nav-icon">⚡</span>
-        <span>Check-in</span>
-      </button>
-      <button class="nav-item" data-tab="1">
-        <span class="nav-icon">🎮</span>
-        <span>Game</span>
-      </button>
+      <button class="nav-item active" data-tab="0"><span class="nav-icon">⚡</span><span>Check-in</span></button>
+      <button class="nav-item" data-tab="1"><span class="nav-icon">🎮</span><span>Game</span></button>
     </nav>
   </body>
 </html>
