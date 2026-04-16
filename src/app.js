@@ -1,7 +1,7 @@
 import './styles.css';
 import { sdk } from '@farcaster/miniapp-sdk';
 
-const NEYNAR_API_KEY = 'ECB2372A-2376-467C-8927-F03F41816C39';
+const NEYNAR_API_KEY = '16EBB0E0-D1C3-4979-81EB-A6425D7C9850';
 const state = { user: null, profile: null, score: null, readyCalled: false };
 const $ = id => document.getElementById(id);
 const els = {
