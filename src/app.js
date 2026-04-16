@@ -118,15 +118,12 @@ els.checkinBtn.addEventListener('click', () => {
 
 function resetGameState() {
   const g = state.game;
-  g.score = 0;
-  g.speed = 5.5;
-  g.obstacleX = 320;
-  g.playerY = 0;
-  g.velocityY = 0;
-  g.jumping = false;
+  g.score = 0; g.speed = 5.5; g.obstacleX = 320; g.playerY = 0; g.velocityY = 0; g.jumping = false;
   els.gameScore.textContent = '0';
   els.player.style.transform = 'translateY(0px)';
   els.obstacle.style.transform = `translateX(${g.obstacleX}px)`;
+  els.message.textContent = 'Tap Start';
+  els.message.classList.add('show');
 }
 function setGameStatus(text) { els.gameStatus.textContent = text; }
 function jump() {
@@ -140,7 +137,7 @@ function detectCollision() {
   const obstacleLeft = g.obstacleX;
   const obstacleRight = g.obstacleX + 22;
   const playerLeft = 34;
-  const playerRight = 66;
+  const playerRight = 64;
   const playerFeet = 170 - g.playerY;
   return obstacleRight > playerLeft && obstacleLeft < playerRight && playerFeet > 138;
 }
@@ -160,7 +157,6 @@ function endGame() {
 function gameLoop() {
   const g = state.game;
   if (!g.running) return;
-
   g.obstacleX -= g.speed;
   if (g.obstacleX < -30) {
     g.obstacleX = 340 + Math.random() * 80;
@@ -168,7 +164,6 @@ function gameLoop() {
     g.speed = Math.min(11, g.speed + 0.15);
     els.gameScore.textContent = String(g.score);
   }
-
   if (g.jumping) {
     g.playerY += g.velocityY;
     g.velocityY -= g.gravity;
@@ -178,10 +173,8 @@ function gameLoop() {
       g.jumping = false;
     }
   }
-
   els.player.style.transform = `translateY(-${g.playerY}px)`;
   els.obstacle.style.transform = `translateX(${g.obstacleX}px)`;
-
   if (detectCollision()) return endGame();
   g.frame = requestAnimationFrame(gameLoop);
 }
@@ -189,8 +182,8 @@ function startGame() {
   resetGameState();
   state.game.running = true;
   setGameStatus('Running');
-  els.message.classList.remove('show');
   els.message.textContent = '';
+  els.message.classList.remove('show');
   cancelAnimationFrame(state.game.frame);
   gameLoop();
 }
@@ -199,9 +192,9 @@ els.restartBtn.addEventListener('click', startGame);
 els.jumpBtn.addEventListener('click', jump);
 els.game.addEventListener('click', () => state.game.running ? jump() : startGame());
 window.addEventListener('keydown', (e) => {
-  if (e.code === 'Space' || e.code === 'ArrowUp') {
+  if ((e.code === 'Space' || e.code === 'ArrowUp') && state.activeTab === 0) {
     e.preventDefault();
-    state.activeTab === 1 ? (state.game.running ? jump() : startGame()) : null;
+    state.game.running ? jump() : startGame();
   }
 });
 
@@ -212,6 +205,4 @@ setCheckInStatus('Waiting for wallet connection');
 setGameStatus('Ready');
 resetGameState();
 setInterval(updateCountdown, 1000);
-requestAnimationFrame(() => setTab(1));
-els.message.textContent = 'Tap Start';
-els.message.classList.add('show');
+setTab(0);
