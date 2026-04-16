@@ -2,90 +2,93 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Base Check-in + Dino Game</title>
-    <meta name="description" content="Swipe between a Base daily check-in MVP and a mini dino game." />
+    <meta name="description" content="Modern mini app with bottom tabs for Base check-in and a simple game." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    <script type="module" crossorigin src="/assets/index-uol1r13b.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-CNOTnN-f.css">
+    <script type="module" crossorigin src="/assets/index-BAgb3AkA.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-BjA2k8t0.css">
   </head>
   <body>
-    <main class="shell">
-      <header class="topbar">
-        <button class="tab active" data-tab="checkin">Check-in</button>
-        <button class="tab" data-tab="game">Game</button>
-      </header>
-
+    <main class="app-shell">
       <section id="swipe-area" class="swipe-area">
         <div id="track" class="track">
-          <section class="page">
-            <div class="card hero-card">
-              <div class="badge-row">
-                <span class="pill">Base Daily Check-in</span>
-                <span class="pill muted">MVP</span>
-              </div>
-              <h1>Check in every day, build your streak.</h1>
-              <p>Prototype mini app untuk daily check-in di Base. Geser ke kiri untuk buka game.</p>
-              <div class="stats-grid">
-                <article class="stat-card"><span class="stat-label">Streak</span><strong id="streak">0</strong><small>days</small></article>
-                <article class="stat-card"><span class="stat-label">Points</span><strong id="points">0</strong><small>total</small></article>
-                <article class="stat-card"><span class="stat-label">Next reset</span><strong id="countdown">--:--:--</strong><small>countdown</small></article>
-              </div>
+          <section class="screen">
+            <div class="hero-card">
+              <span class="eyebrow">Base Daily Check-in</span>
+              <h1>Simple daily streaks, cleaner flow.</h1>
+              <p>Swipe left for the game, or use the bottom tab bar.</p>
             </div>
 
-            <div class="card panel-card">
-              <div class="wallet-box">
+            <div class="stats-row">
+              <article class="mini-card"><span>Streak</span><strong id="streak">0</strong></article>
+              <article class="mini-card"><span>Points</span><strong id="points">0</strong></article>
+              <article class="mini-card"><span>Reset</span><strong id="countdown">--:--</strong></article>
+            </div>
+
+            <div class="panel">
+              <div class="panel-row">
                 <div>
-                  <div class="wallet-label">Wallet</div>
-                  <div id="wallet-status" class="wallet-value">Not connected</div>
+                  <div class="muted">Wallet</div>
+                  <div id="wallet-status" class="value">Not connected</div>
                 </div>
-                <button id="connect-btn" class="btn secondary">Connect</button>
+                <button id="connect-btn" class="btn ghost">Connect</button>
               </div>
-              <div class="checkin-box">
-                <div class="checkin-row">
-                  <div><div class="wallet-label">Daily fee</div><div class="fee">0.0001 ETH on Base</div></div>
-                  <div><div class="wallet-label">Reward</div><div class="fee">10 points + streak bonus</div></div>
-                </div>
-                <button id="checkin-btn" class="btn primary">Check in now</button>
-                <div id="status" class="status">Waiting for wallet connection</div>
+
+              <div class="info-grid">
+                <div><span class="muted">Daily fee</span><div class="value small">0.0001 ETH on Base</div></div>
+                <div><span class="muted">Reward</span><div class="value small">10 pts + streak bonus</div></div>
               </div>
+
+              <button id="checkin-btn" class="btn primary big">Check in now</button>
+              <div id="status" class="status">Waiting for wallet connection</div>
             </div>
           </section>
 
-          <section class="page">
-            <div class="card hero-card">
-              <div class="badge-row">
-                <span class="pill">Mini Dino Dash</span>
-                <span class="pill muted">Swipe right to return</span>
-              </div>
-              <h1>Run, dodge, survive.</h1>
-              <p>Game simpel ala offline browser. Ketuk area game atau tombol jump buat hindari obstacle.</p>
-              <div class="stats-grid game-stats">
-                <article class="stat-card"><span class="stat-label">Score</span><strong id="game-score">0</strong><small>current</small></article>
-                <article class="stat-card"><span class="stat-label">Best</span><strong id="best-score">0</strong><small>saved</small></article>
-                <article class="stat-card"><span class="stat-label">Status</span><strong id="game-status">Ready</strong><small>state</small></article>
-              </div>
+          <section class="screen">
+            <div class="hero-card">
+              <span class="eyebrow">Mini Dino Dash</span>
+              <h1>Tap. Jump. Survive.</h1>
+              <p>Swipe right anytime to get back to check-in.</p>
             </div>
 
-            <div class="card panel-card">
+            <div class="stats-row">
+              <article class="mini-card"><span>Score</span><strong id="game-score">0</strong></article>
+              <article class="mini-card"><span>Best</span><strong id="best-score">0</strong></article>
+              <article class="mini-card"><span>Status</span><strong id="game-status">Ready</strong></article>
+            </div>
+
+            <div class="panel game-panel">
               <div id="game" class="game-area" aria-label="Mini Dino Dash game area">
-                <div class="skyline"></div>
-                <div class="ground"></div>
+                <div class="sky"></div>
+                <div class="ground-line"></div>
                 <div id="player" class="player"></div>
                 <div id="obstacle" class="obstacle"></div>
-                <div id="message" class="message">Tap Start</div>
+                <div id="message" class="message show">Tap Start</div>
               </div>
-              <div class="controls">
+
+              <div class="game-controls">
                 <button id="start-btn" class="btn primary">Start</button>
-                <button id="jump-btn" class="btn">Jump</button>
-                <button id="restart-btn" class="btn">Restart</button>
+                <button id="jump-btn" class="btn ghost">Jump</button>
+                <button id="restart-btn" class="btn ghost">Restart</button>
               </div>
             </div>
           </section>
         </div>
       </section>
     </main>
+
+    <nav class="bottom-nav">
+      <button class="nav-item active" data-tab="0">
+        <span class="nav-icon">⚡</span>
+        <span>Check-in</span>
+      </button>
+      <button class="nav-item" data-tab="1">
+        <span class="nav-icon">🎮</span>
+        <span>Game</span>
+      </button>
+    </nav>
   </body>
 </html>
