@@ -1,7 +1,7 @@
 import './styles.css';
 
 const state = {
-  activeTab: 0,
+  activeIndex: 0,
   wallet: null,
   streak: Number(localStorage.getItem('base-checkin-streak') || 0),
   points: Number(localStorage.getItem('base-checkin-points') || 0),
@@ -45,19 +45,23 @@ const els = {
   restartBtn: $('restart-btn'),
 };
 
-function setTab(index) {
-  state.activeTab = index;
-  els.track.style.transform = `translateX(-${index * 50}%)`;
-  els.navItems.forEach((item, i) => item.classList.toggle('active', i === index));
+function renderTabs() {
+  els.track.style.transform = `translateX(-${state.activeIndex * 50}%)`;
+  els.navItems.forEach((item) => {
+    item.classList.toggle('active', Number(item.dataset.target) === state.activeIndex);
+  });
 }
-
-els.navItems.forEach((item) => item.addEventListener('click', () => setTab(Number(item.dataset.tab))));
+function setActiveIndex(index) {
+  state.activeIndex = Math.max(0, Math.min(1, index));
+  renderTabs();
+}
+els.navItems.forEach((item) => item.addEventListener('click', () => setActiveIndex(Number(item.dataset.target))));
 els.swipeArea.addEventListener('touchstart', (e) => { state.touchStartX = e.touches[0].clientX; }, { passive: true });
 els.swipeArea.addEventListener('touchend', (e) => {
   if (state.touchStartX == null) return;
   const diff = e.changedTouches[0].clientX - state.touchStartX;
-  if (diff > 45 && state.activeTab > 0) setTab(state.activeTab - 1);
-  if (diff < -45 && state.activeTab < 1) setTab(state.activeTab + 1);
+  if (diff < -45) setActiveIndex(state.activeIndex + 1);
+  if (diff > 45) setActiveIndex(state.activeIndex - 1);
   state.touchStartX = null;
 }, { passive: true });
 
@@ -192,7 +196,7 @@ els.restartBtn.addEventListener('click', startGame);
 els.jumpBtn.addEventListener('click', jump);
 els.game.addEventListener('click', () => state.game.running ? jump() : startGame());
 window.addEventListener('keydown', (e) => {
-  if ((e.code === 'Space' || e.code === 'ArrowUp') && state.activeTab === 0) {
+  if ((e.code === 'Space' || e.code === 'ArrowUp') && state.activeIndex === 0) {
     e.preventDefault();
     state.game.running ? jump() : startGame();
   }
@@ -205,4 +209,4 @@ setCheckInStatus('Waiting for wallet connection');
 setGameStatus('Ready');
 resetGameState();
 setInterval(updateCountdown, 1000);
-setTab(0);
+setActiveIndex(0);

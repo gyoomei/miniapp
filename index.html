@@ -8,14 +8,14 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    <script type="module" crossorigin src="/assets/index-Cz5yKyE4.js"></script>
+    <script type="module" crossorigin src="/assets/index-D90boFIR.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/index-D4iKagCl.css">
   </head>
   <body>
     <main class="app-shell">
       <section id="swipe-area" class="swipe-area">
-        <div id="track" class="track" style="transform:translateX(0%)">
-          <section class="screen" data-screen="game">
+        <div id="track" class="track">
+          <section class="screen" data-index="0" data-name="game">
             <div class="hero-card compact">
               <span class="eyebrow">Mini Dino Dash</span>
               <h1>Tap and survive.</h1>
@@ -47,7 +47,7 @@
             </div>
           </section>
 
-          <section class="screen" data-screen="checkin">
+          <section class="screen" data-index="1" data-name="checkin">
             <div class="hero-card compact">
               <span class="eyebrow">Base Check-in</span>
               <h1>Daily streaks.</h1>
@@ -68,12 +68,10 @@
                 </div>
                 <button id="connect-btn" class="btn ghost">Connect</button>
               </div>
-
               <div class="reward-line">
                 <span class="muted">Reward</span>
                 <span class="value small">10 pts + bonus</span>
               </div>
-
               <button id="checkin-btn" class="btn primary big">Check in now</button>
               <div id="status" class="status">Waiting for wallet connection</div>
             </div>
@@ -83,8 +81,8 @@
     </main>
 
     <nav class="bottom-nav">
-      <button class="nav-item active" data-tab="0"><span class="nav-icon">🎮</span><span>Game</span></button>
-      <button class="nav-item" data-tab="1"><span class="nav-icon">⚡</span><span>Check-in</span></button>
+      <button class="nav-item active" data-target="0"><span class="nav-icon">🎮</span><span>Game</span></button>
+      <button class="nav-item" data-target="1"><span class="nav-icon">⚡</span><span>Check-in</span></button>
     </nav>
   </body>
 </html>
