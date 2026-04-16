@@ -10,7 +10,7 @@ const els = {
 function toast(message){ els.toast.textContent = message; els.toast.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(()=>els.toast.classList.remove('show'), 2200); }
 function setStatus(message){ els.status.textContent = message; }
 function compact(value){ return new Intl.NumberFormat('en',{notation:'compact', maximumFractionDigits:1}).format(value ?? 0); }
-function tier(score){ if(score >= 90) return ['Elite','High trust, high reach']; if(score >= 75) return ['Strong','Very healthy Farcaster presence']; if(score >= 50) return ['Growing','Solid profile momentum']; return ['Early','Still building reputation']; }
+function tier(score){ if(score >= 90) return ['Elite','Exceptional public profile strength']; if(score >= 75) return ['Strong','Healthy Farcaster presence']; if(score >= 50) return ['Growing','Solid public profile momentum']; return ['Early','Still building public profile strength']; }
 async function neynar(path){
   const res = await fetch(`https://api.neynar.com${path}`, { headers: { accept: 'application/json', api_key: NEYNAR_API_KEY } });
   if(!res.ok){ const text = await res.text(); throw new Error(`Neynar ${res.status}: ${text}`); }
@@ -20,10 +20,14 @@ async function loadProfile(fid){
   const data = await neynar(`/v2/farcaster/user/bulk?fids=${fid}`);
   return data.users?.[0] ?? null;
 }
-async function loadScore(fid){
-  const data = await neynar(`/v2/farcaster/user?fid=${fid}`);
-  const score = data?.user?.score ?? data?.result?.user?.score ?? data?.users?.[0]?.score ?? null;
-  if (typeof score !== 'number') throw new Error('Score field not found in Neynar response');
+function computeFreeScore(profile){
+  const followers = Math.min(35, Math.log10((profile.follower_count || 0) + 1) * 10);
+  const following = Math.max(0, 12 - Math.log10((profile.following_count || 1) + 1) * 3);
+  const verified = Math.min(20, (profile.verifications?.length || 0) * 4);
+  const bio = profile.profile?.bio?.text ? 8 : 0;
+  const avatar = profile.pfp_url ? 8 : 0;
+  const pro = profile.pro?.status === 'subscribed' ? 10 : 0;
+  const score = Math.round(Math.min(100, followers + following + verified + bio + avatar + pro));
   return score;
 }
 function render(){
@@ -54,12 +58,11 @@ async function hydrate(){
   if(!context?.user?.fid) throw new Error('No Farcaster user context available');
   state.user = context.user;
   const fid = context.user.fid;
-  const [profileRes, scoreRes] = await Promise.allSettled([loadProfile(fid), loadScore(fid)]);
-  state.profile = profileRes.status === 'fulfilled' && profileRes.value ? profileRes.value : context.user;
-  state.score = scoreRes.status === 'fulfilled' ? scoreRes.value : null;
-  if (scoreRes.status !== 'fulfilled') console.error('Neynar score failed:', scoreRes.reason);
+  const profileRes = await Promise.allSettled([loadProfile(fid)]);
+  state.profile = profileRes[0].status === 'fulfilled' && profileRes[0].value ? profileRes[0].value : context.user;
+  state.score = computeFreeScore(state.profile);
   render();
-  setStatus(scoreRes.status === 'fulfilled' ? 'Live Neynar score loaded' : 'Profile loaded, score unavailable');
+  setStatus('Free reputation score loaded');
 }
 async function init(){
   try { await hydrate(); if(!state.readyCalled){ await sdk.actions.ready(); state.readyCalled = true; } }
