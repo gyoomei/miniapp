@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    <script type="module" crossorigin src="/assets/index-CRSfDw_K.js"></script>
+    <script type="module" crossorigin src="/assets/index-2LiUjvPV.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/index-D4iKagCl.css">
   </head>
   <body>
@@ -39,10 +39,24 @@
                 <div id="obstacle" class="obstacle"></div>
                 <div id="message" class="message show">Tap Start</div>
               </div>
+              <div class="claim-card">
+                <div class="claim-row">
+                  <div>
+                    <span class="muted">Claimable</span>
+                    <div id="claimable-score" class="value">0 DEGEN</div>
+                  </div>
+                  <div>
+                    <span class="muted">Source</span>
+                    <div class="value small">Best score</div>
+                  </div>
+                </div>
+                <button id="claim-btn" class="btn primary big">Claim DEGEN</button>
+                <div id="claim-status" class="status">Coming soon, reward contract not connected yet.</div>
+              </div>
+
               <div class="game-controls">
                 <button id="start-btn" class="btn primary">Start</button>
                 <button id="jump-btn" class="btn ghost">Jump</button>
-                
               </div>
             </div>
           </section>
