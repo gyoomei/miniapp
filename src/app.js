@@ -42,7 +42,6 @@ const els = {
   game: $('game'),
   startBtn: $('start-btn'),
   jumpBtn: $('jump-btn'),
-  restartBtn: $('restart-btn'),
 };
 
 function renderTabs() {
@@ -192,7 +191,6 @@ function startGame() {
   gameLoop();
 }
 els.startBtn.addEventListener('click', startGame);
-els.restartBtn.addEventListener('click', startGame);
 els.jumpBtn.addEventListener('click', jump);
 els.game.addEventListener('click', () => state.game.running ? jump() : startGame());
 window.addEventListener('keydown', (e) => {
