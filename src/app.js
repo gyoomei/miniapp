@@ -16,7 +16,7 @@ const state = {
     obstacleX: 320,
     playerY: 0,
     velocityY: 0,
-    gravity: 0.72,
+    gravity: 0.64,
     frame: null,
   }
 };
@@ -121,7 +121,7 @@ els.checkinBtn.addEventListener('click', () => {
 
 function resetGameState() {
   const g = state.game;
-  g.score = 0; g.speed = 5.5; g.obstacleX = 320; g.playerY = 0; g.velocityY = 0; g.jumping = false;
+  g.score = 0; g.speed = 5.2; g.obstacleX = 320; g.playerY = 0; g.velocityY = 0; g.jumping = false;
   els.gameScore.textContent = '0';
   els.player.style.transform = 'translateY(0px)';
   els.obstacle.style.transform = `translateX(${g.obstacleX}px)`;
@@ -133,7 +133,7 @@ function jump() {
   const g = state.game;
   if (!g.running || g.jumping) return;
   g.jumping = true;
-  g.velocityY = 13;
+  g.velocityY = 14.5;
 }
 function detectCollision() {
   const g = state.game;
@@ -142,7 +142,7 @@ function detectCollision() {
   const playerLeft = 34;
   const playerRight = 64;
   const playerFeet = 170 - g.playerY;
-  return obstacleRight > playerLeft && obstacleLeft < playerRight && playerFeet > 138;
+  return obstacleRight > playerLeft && obstacleLeft < playerRight && playerFeet > 142;
 }
 function endGame() {
   const g = state.game;
@@ -191,7 +191,7 @@ function startGame() {
   gameLoop();
 }
 els.startBtn.addEventListener('click', startGame);
-els.jumpBtn.addEventListener('click', jump);
+els.jumpBtn.addEventListener('pointerdown', (e) => { e.preventDefault(); jump(); });
 els.game.addEventListener('click', () => state.game.running ? jump() : startGame());
 window.addEventListener('keydown', (e) => {
   if ((e.code === 'Space' || e.code === 'ArrowUp') && state.activeIndex === 0) {
