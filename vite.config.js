@@ -7,14 +7,9 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    sourcemap: false, // Disable sourcemaps for faster build
+    sourcemap: false,
     assetsDir: 'assets',
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true // Remove console logs in production
-      }
-    }
+    minify: 'esbuild'
   },
   publicDir: 'assets'
 })
