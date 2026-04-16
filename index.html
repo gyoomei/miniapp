@@ -9,7 +9,7 @@
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
     body {
       margin: 0; padding: 0;
-      background: linear-gradient(135deg, #0a0a1f, #1a0033);
+      background: linear-gradient(135deg, #0a1524, #1a0033);
       color: white;
       font-family: 'Inter', sans-serif;
       min-height: 100vh;
@@ -31,7 +31,7 @@
       text-align: center;
       font-size: 24px;
       font-weight: 700;
-      background: linear-gradient(to right, #00f5ff, #c026d3);
+      background: linear-gradient(to right, #06b6d4, #9333ea);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       margin-bottom: 20px;
@@ -46,97 +46,104 @@
       width: 72px;
       height: 72px;
       border-radius: 50%;
-      border: 3px solid #00f5ff;
-      box-shadow: 0 0 25px rgba(0,245,255,0.6);
+      border: 3px solid #3b82f6;
+      box-shadow: 0 0 25px rgba(59,130,246,0.8);
     }
     .neynar {
-      background: linear-gradient(135deg, #4c1d95, #7e22ce);
+      background: linear-gradient(135deg, #4c1d95, #9333ea);
       border-radius: 18px;
       padding: 20px;
       text-align: center;
       margin: 20px 0;
     }
     .score {
-      font-size: 52px;
+      font-size: 48px;
       font-weight: 800;
       color: white;
+      text-shadow: 0 0 10px rgba(255,255,255,0.6);
     }
     button {
       width: 100%;
-      padding: 14px;
+      padding: 12px;
       margin: 8px 0;
       border: none;
       border-radius: 14px;
       font-weight: 600;
       cursor: pointer;
     }
-    .btn-primary { background: linear-gradient(to right, #22d3ee, #a855f7); color: white; }
+    .btn-primary { background: linear-gradient(to right, #22d3ee, #a855f7); color: white; border: none; }
     .btn-secondary { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.3); }
   </style>
 </head>
 <body>
   <div class="card">
-    <div class="header">NEYNAR SCORE</div>
-    
-    <div class="profile">
-      <img id="avatar" class="avatar" src="" alt="">
+    <div class="header">Your Neynar Profile</div>
+
+    <div id="profile" class="profile">
+      <img id="avatar" class="avatar" src="https://via.placeholder.com/72" alt="User Avatar">
       <div>
         <h2 id="username">@username</h2>
-        <p id="fid" style="color:#888;">FID: —</p>
+        <p id="fid" style="color: #aaaaaa; font-size: 14px;">FID: -</p>
       </div>
     </div>
 
     <div class="neynar">
-      <div style="font-size:14px;opacity:0.9;">YOUR SCORE</div>
+      <div style="font-size: 16px; margin-bottom: 8px;">Neynar Score</div>
       <div id="score" class="score">0</div>
-      <div id="badge" style="margin-top:8px;font-size:14px;">Power Badge</div>
+      <div id="badge" style="font-size: 14px; margin-top: 4px; color: #d1d5db;">Badge: -</div>
     </div>
 
-    <button class="btn-primary" onclick="copyFID()">📋 Copy FID</button>
-    <button class="btn-secondary" onclick="shareCast()">📢 Share to Cast</button>
-    <button class="btn-secondary" onclick="refresh()">🔄 Refresh</button>
+    <button class="btn-primary" onclick="refreshData()">🔄 Refresh Data</button>
 
-    <div id="status" style="text-align:center;margin-top:16px;font-size:14px;color:#666;">Loading...</div>
+    <div id="status" style="margin-top: 16px; text-align: center; font-size: 14px; color: #9ca3af;">Loading...</div>
   </div>
 
   <script>
-    let user = null;
-
     async function init() {
       try {
-        const ctx = await window.farcaster.getContext();
-        user = ctx.user;
-        document.getElementById('username').textContent = '@' + user.username;
-        document.getElementById('fid').textContent = `FID: ${user.fid}`;
-        document.getElementById('avatar').src = user.pfp_url;
+        const { user } = await window.farcaster.getContext();
+        const avatar = document.getElementById('avatar');
+        const username = document.getElementById('username');
+        const fidElement = document.getElementById('fid');
+        
+        username.textContent = '@' + user.username;
+        fidElement.textContent = 'FID: ' + user.fid;
+        
+        if (user.pfp_url) {
+          avatar.src = user.pfp_url;
+        }
 
-        // Fetch Neynar Score
-        const res = await fetch(`https://api.neynar.com/v2/farcaster/user?fid=${user.fid}`, {
-          headers: { 'api_key': 'YOUR_NEYNAR_KEY_HERE' }
+        const neynarScore = await fetchNeynarScore(user.fid);
+        displayNeynarScore(neynarScore);
+      } catch (error) {
+        document.getElementById('status').textContent = '⚠️ Failed to load user data';
+        console.error(error);
+      }
+    }
+
+    async function fetchNeynarScore(fid) {
+      try {
+        const response = await fetch(`https://api.neynar.com/v2/farcaster/user?fid=${fid}`, {
+          headers: { 'api_key': 'YOUR_NEYNAR_API_KEY' },
         });
-        const data = await res.json();
-        const score = data.users?.[0]?.score || 0;
-        document.getElementById('score').textContent = Math.floor(score);
-        document.getElementById('status').innerHTML = '✅ Connected';
-      } catch(e) {
-        document.getElementById('status').innerHTML = '❌ Error loading data';
+        const data = await response.json();
+        return data.users?.[0]?.score || 0;
+      } catch (error) {
+        console.error('Failed to fetch Neynar score:', error);
+        return 0;
       }
     }
 
-    function copyFID() {
-      if (user) navigator.clipboard.writeText(user.fid);
-      alert('FID copied!');
+    function displayNeynarScore(score) {
+      document.getElementById('score').textContent = Math.floor(score);
+      const badge = document.getElementById('badge');
+      badge.textContent = score > 800 ? '🔥 Power User' : 'Standard User';
+      document.getElementById('status').textContent = '✅ Data loaded successfully';
     }
 
-    function shareCast() {
-      if (user) {
-        const text = `My Neynar Score is ${document.getElementById('score').textContent} 👀`;
-        window.farcaster.openUrl(`https://warpcast.com/~/compose?text=${encodeURIComponent(text)}`);
-      }
-    }
-
-    function refresh() {
-      location.reload();
+    function refreshData() {
+      document.getElementById('status').textContent = 'Refreshing...';
+      setTimeout(init, 1200);
     }
 
     window.onload = init;
