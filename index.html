@@ -3,61 +3,54 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Community Score Pulse</title>
-    <meta name="description" content="Modern Farcaster mini app that shows each visitor's live Neynar score and profile stats." />
+    <title>Mini Dino Dash</title>
+    <meta name="description" content="A tiny endless runner mini app inspired by the offline dino game." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    <script type="module" crossorigin src="/assets/index-DVKql88V.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-CbnwmGq7.css">
+    <script type="module" crossorigin src="/assets/index-CU2FfsQn.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-Dkj7ogsw.css">
   </head>
   <body>
-    <main id="app" class="shell" data-tone="growing">
-      <section class="hero">
-        <div class="badge-row">
-          <div class="kicker">Farcaster reputation</div>
-          <div class="live-pill"><span class="live-dot"></span> live via Neynar</div>
+    <main class="app-shell">
+      <section class="hero-card">
+        <div class="hero-top">
+          <span class="pill">Mini Dino Dash</span>
+          <span class="pill muted">Tap to jump</span>
         </div>
-        <div class="profile-row">
-          <div class="avatar-wrap">
-            <img id="avatar" alt="Profile avatar" src="https://placehold.co/128x128/0f172a/e2e8f0?text=FC" />
-            <div class="avatar-glow"></div>
+        <h1>Run, dodge, survive.</h1>
+        <p>Game simpel ala offline browser. Ketuk layar atau tombol jump buat hindari obstacle.</p>
+        <div class="hud">
+          <div class="hud-box">
+            <span class="hud-label">Score</span>
+            <strong id="score">0</strong>
           </div>
-          <div class="identity">
-            <h1 id="display-name">Loading...</h1>
-            <div id="username" class="handle">@loading</div>
-            <div id="fid" class="fid-chip">FID --</div>
+          <div class="hud-box">
+            <span class="hud-label">Best</span>
+            <strong id="best-score">0</strong>
           </div>
-        </div>
-        <p id="bio" class="bio">Pulling your Farcaster profile and live Neynar score.</p>
-        <div class="score-panel">
-          <small>Community Score</small>
-          <div class="score-value">
-            <strong id="score">--</strong>
-            <span id="score-label" class="score-tier">Loading</span>
+          <div class="hud-box">
+            <span class="hud-label">Status</span>
+            <strong id="status">Ready</strong>
           </div>
-          <div id="score-hint" class="score-hint">Calculated from public Farcaster profile data</div>
         </div>
       </section>
-      <section class="grid">
-        <article class="stat-card">
-          <div class="stat-label">Followers</div>
-          <div id="followers" class="stat-number">0</div>
-          <div class="stat-sub">Audience connected to this profile</div>
-        </article>
-        <article class="stat-card">
-          <div class="stat-label">Following</div>
-          <div id="following" class="stat-number">0</div>
-          <div class="stat-sub">Accounts this user tracks</div>
-        </article>
+
+      <section class="game-card">
+        <div id="game" class="game-area" aria-label="Mini Dino Dash game area">
+          <div class="skyline"></div>
+          <div class="ground"></div>
+          <div id="player" class="player"></div>
+          <div id="obstacle" class="obstacle"></div>
+          <div id="message" class="message">Tap Start</div>
+        </div>
+
+        <div class="controls">
+          <button id="start-btn" class="btn primary">Start</button>
+          <button id="jump-btn" class="btn">Jump</button>
+          <button id="restart-btn" class="btn">Restart</button>
+        </div>
       </section>
-      <section class="actions">
-        <button id="refresh-data" class="action-button primary"><span>Refresh live score</span><span>↻</span></button>
-        <button id="open-profile" class="action-button"><span>Open Warpcast profile</span><span class="action-copy">view</span></button>
-        <button id="share-miniapp" class="action-button"><span>Share this mini app</span><span class="action-copy">cast</span></button>
-      </section>
-      <div id="status" class="status">Preparing mini app...</div>
     </main>
-    <div id="toast" class="toast"></div>
   </body>
 </html>

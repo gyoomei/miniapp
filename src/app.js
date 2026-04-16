@@ -1,74 +1,133 @@
 import './styles.css';
-import { sdk } from '@farcaster/miniapp-sdk';
 
-const NEYNAR_API_KEY = '16EBB0E0-D1C3-4979-81EB-A6425D7C9850';
-const state = { user: null, profile: null, score: null, readyCalled: false };
-const $ = id => document.getElementById(id);
-const els = {
-  app: $('app'), status: $('status'), avatar: $('avatar'), displayName: $('display-name'), username: $('username'), fid: $('fid'), bio: $('bio'), score: $('score'), scoreLabel: $('score-label'), scoreHint: $('score-hint'), followers: $('followers'), following: $('following'), profileBtn: $('open-profile'), shareBtn: $('share-miniapp'), refreshBtn: $('refresh-data'), toast: $('toast')
+const scoreEl = document.getElementById('score');
+const bestEl = document.getElementById('best-score');
+const statusEl = document.getElementById('status');
+const playerEl = document.getElementById('player');
+const obstacleEl = document.getElementById('obstacle');
+const messageEl = document.getElementById('message');
+const startBtn = document.getElementById('start-btn');
+const jumpBtn = document.getElementById('jump-btn');
+const restartBtn = document.getElementById('restart-btn');
+const gameEl = document.getElementById('game');
+
+const state = {
+  running: false,
+  jumping: false,
+  score: 0,
+  best: Number(localStorage.getItem('mini-dino-best') || 0),
+  speed: 6,
+  obstacleX: 520,
+  playerY: 0,
+  velocityY: 0,
+  gravity: 0.9,
+  frame: null,
 };
-function toast(message){ els.toast.textContent = message; els.toast.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(()=>els.toast.classList.remove('show'), 2200); }
-function setStatus(message){ els.status.textContent = message; }
-function compact(value){ return new Intl.NumberFormat('en',{notation:'compact', maximumFractionDigits:1}).format(value ?? 0); }
-function tier(score){ if(score >= 90) return ['Elite','Exceptional public profile strength']; if(score >= 75) return ['Strong','Healthy Farcaster presence']; if(score >= 50) return ['Growing','Solid public profile momentum']; return ['Early','Still building public profile strength']; }
-async function neynar(path){
-  const res = await fetch(`https://api.neynar.com${path}`, { headers: { accept: 'application/json', api_key: NEYNAR_API_KEY } });
-  if(!res.ok){ const text = await res.text(); throw new Error(`Neynar ${res.status}: ${text}`); }
-  return res.json();
+
+bestEl.textContent = state.best;
+
+function setStatus(text) {
+  statusEl.textContent = text;
 }
-async function loadProfile(fid){
-  const data = await neynar(`/v2/farcaster/user/bulk?fids=${fid}`);
-  return data.users?.[0] ?? null;
+
+function resetPositions() {
+  state.score = 0;
+  state.speed = 6;
+  state.obstacleX = 520;
+  state.playerY = 0;
+  state.velocityY = 0;
+  state.jumping = false;
+  scoreEl.textContent = '0';
+  playerEl.style.bottom = '18px';
+  obstacleEl.style.transform = `translateX(${state.obstacleX}px)`;
 }
-function computeFreeScore(profile){
-  const followers = Math.min(35, Math.log10((profile.follower_count || 0) + 1) * 10);
-  const following = Math.max(0, 12 - Math.log10((profile.following_count || 1) + 1) * 3);
-  const verified = Math.min(20, (profile.verifications?.length || 0) * 4);
-  const bio = profile.profile?.bio?.text ? 8 : 0;
-  const avatar = profile.pfp_url ? 8 : 0;
-  const pro = profile.pro?.status === 'subscribed' ? 10 : 0;
-  const score = Math.round(Math.min(100, followers + following + verified + bio + avatar + pro));
-  return score;
+
+function jump() {
+  if (!state.running || state.jumping) return;
+  state.jumping = true;
+  state.velocityY = 14;
 }
-function render(){
-  const user = state.profile || state.user;
-  if(!user) return;
-  els.displayName.textContent = user.display_name || user.displayName || user.username || 'Farcaster User';
-  els.username.textContent = `@${user.username || 'unknown'}`;
-  els.fid.textContent = `FID ${user.fid}`;
-  els.bio.textContent = user.profile?.bio?.text || user.bio?.text || 'Open your Farcaster identity with a cleaner, richer mini app experience.';
-  els.avatar.src = user.pfp_url || user.pfpUrl || 'https://placehold.co/128x128/0f172a/e2e8f0?text=FC';
-  els.followers.textContent = compact(user.follower_count ?? 0);
-  els.following.textContent = compact(user.following_count ?? 0);
-  if(typeof state.score === 'number'){
-    const rounded = Math.round(state.score);
-    const [label, hint] = tier(rounded);
-    els.score.textContent = String(rounded);
-    els.scoreLabel.textContent = label;
-    els.scoreHint.textContent = hint;
-  } else {
-    els.score.textContent = '--';
-    els.scoreLabel.textContent = 'Unavailable';
-    els.scoreHint.textContent = 'Neynar score could not be loaded right now';
+
+function endGame() {
+  state.running = false;
+  setStatus('Crashed');
+  messageEl.textContent = 'Game Over';
+  messageEl.classList.add('show');
+  if (state.score > state.best) {
+    state.best = state.score;
+    localStorage.setItem('mini-dino-best', String(state.best));
+    bestEl.textContent = String(state.best);
   }
+  cancelAnimationFrame(state.frame);
 }
-async function hydrate(){
-  setStatus('Loading Farcaster profile...');
-  const context = await sdk.context;
-  if(!context?.user?.fid) throw new Error('No Farcaster user context available');
-  state.user = context.user;
-  const fid = context.user.fid;
-  const profileRes = await Promise.allSettled([loadProfile(fid)]);
-  state.profile = profileRes[0].status === 'fulfilled' && profileRes[0].value ? profileRes[0].value : context.user;
-  state.score = computeFreeScore(state.profile);
-  render();
-  setStatus('Free reputation score loaded');
+
+function checkCollision() {
+  const obstacleLeft = state.obstacleX;
+  const obstacleRight = state.obstacleX + 24;
+  const playerLeft = 54;
+  const playerRight = 90;
+  const playerBottom = 18 + state.playerY;
+  return obstacleRight > playerLeft && obstacleLeft < playerRight && playerBottom < 58;
 }
-async function init(){
-  try { await hydrate(); if(!state.readyCalled){ await sdk.actions.ready(); state.readyCalled = true; } }
-  catch(err){ console.error(err); setStatus('Failed to load profile data'); toast('Could not load Farcaster data'); }
+
+function loop() {
+  if (!state.running) return;
+
+  state.obstacleX -= state.speed;
+  if (state.obstacleX < -40) {
+    state.obstacleX = 520 + Math.random() * 120;
+    state.score += 1;
+    state.speed = Math.min(13, state.speed + 0.18);
+    scoreEl.textContent = String(state.score);
+  }
+
+  if (state.jumping) {
+    state.playerY += state.velocityY;
+    state.velocityY -= state.gravity;
+    if (state.playerY <= 0) {
+      state.playerY = 0;
+      state.velocityY = 0;
+      state.jumping = false;
+    }
+  }
+
+  obstacleEl.style.transform = `translateX(${state.obstacleX}px)`;
+  playerEl.style.bottom = `${18 + state.playerY}px`;
+
+  if (checkCollision()) {
+    endGame();
+    return;
+  }
+
+  state.frame = requestAnimationFrame(loop);
 }
-els.refreshBtn.addEventListener('click', async ()=>{ els.refreshBtn.disabled = true; try { await hydrate(); toast('Profile refreshed'); } catch(err){ console.error(err); toast('Refresh failed'); } finally { els.refreshBtn.disabled = false; } });
-els.profileBtn.addEventListener('click', async ()=>{ const username = state.profile?.username || state.user?.username; if(!username) return toast('Username not available'); const url = `https://warpcast.com/${username}`; try { if(sdk.actions?.openUrl) await sdk.actions.openUrl(url); else window.open(url, '_blank', 'noopener,noreferrer'); } catch { toast('Failed to open profile'); } });
-els.shareBtn.addEventListener('click', async ()=>{ const url = 'https://miniapp-j9rw.vercel.app'; try { if(sdk.actions?.composeCast){ await sdk.actions.composeCast({ text:'Checking my Farcaster reputation with this mini app ✨', embeds:[url] }); toast('Share composer opened'); } else { await navigator.clipboard.writeText(url); toast('Mini app URL copied'); } } catch { toast('Share not available'); } });
-init();
+
+function startGame() {
+  resetPositions();
+  state.running = true;
+  setStatus('Running');
+  messageEl.textContent = '';
+  messageEl.classList.remove('show');
+  cancelAnimationFrame(state.frame);
+  loop();
+}
+
+startBtn.addEventListener('click', startGame);
+restartBtn.addEventListener('click', startGame);
+jumpBtn.addEventListener('click', jump);
+gameEl.addEventListener('click', () => {
+  if (!state.running) {
+    startGame();
+  } else {
+    jump();
+  }
+});
+window.addEventListener('keydown', (event) => {
+  if (event.code === 'Space' || event.code === 'ArrowUp') {
+    event.preventDefault();
+    if (!state.running) startGame(); else jump();
+  }
+});
+
+setStatus('Ready');
+obstacleEl.style.transform = `translateX(${state.obstacleX}px)`;
