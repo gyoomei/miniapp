@@ -212,4 +212,6 @@ setCheckInStatus('Waiting for wallet connection');
 setGameStatus('Ready');
 resetGameState();
 setInterval(updateCountdown, 1000);
-setTab(0);
+setTab(1);
+els.message.textContent = 'Tap Start';
+els.message.classList.add('show');
