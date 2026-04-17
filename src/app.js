@@ -7,12 +7,13 @@ const state = {
   points: Number(localStorage.getItem('base-checkin-points') || 0),
   lastCheckIn: Number(localStorage.getItem('base-checkin-last') || 0),
   touchStartX: null,
+  audioReady: false,
   game: {
     running: false,
     jumping: false,
     score: 0,
     best: Number(localStorage.getItem('mini-dino-best') || 0),
-    speed: 5.5,
+    speed: 5.2,
     obstacleX: 320,
     playerY: 0,
     velocityY: 0,
@@ -23,32 +24,41 @@ const state = {
 
 const $ = (id) => document.getElementById(id);
 const els = {
-  track: $('track'),
-  swipeArea: $('swipe-area'),
-  navItems: [...document.querySelectorAll('.nav-item')],
-  walletStatus: $('wallet-status'),
-  streak: $('streak'),
-  points: $('points'),
-  countdown: $('countdown'),
-  connectBtn: $('connect-btn'),
-  checkinBtn: $('checkin-btn'),
-  status: $('status'),
-  gameScore: $('game-score'),
-  bestScore: $('best-score'),
-  gameStatus: $('game-status'),
-  player: $('player'),
-  obstacle: $('obstacle'),
-  message: $('message'),
-  game: $('game'),
-  startBtn: $('start-btn'),
-  jumpBtn: $('jump-btn'),
+  track: $('track'), swipeArea: $('swipe-area'), navItems: [...document.querySelectorAll('.nav-item')],
+  walletStatus: $('wallet-status'), streak: $('streak'), points: $('points'), countdown: $('countdown'),
+  connectBtn: $('connect-btn'), checkinBtn: $('checkin-btn'), status: $('status'),
+  gameScore: $('game-score'), bestScore: $('best-score'), gameStatus: $('game-status'),
+  player: $('player'), obstacle: $('obstacle'), message: $('message'), game: $('game'),
+  startBtn: $('start-btn'), jumpBtn: $('jump-btn'), shareBtn: $('share-btn')
 };
+
+function vibrate(pattern) {
+  if (navigator.vibrate) navigator.vibrate(pattern);
+}
+function beep(frequency = 440, duration = 0.06, type = 'square', volume = 0.02) {
+  try {
+    const ctx = window.__audioCtx || (window.__audioCtx = new (window.AudioContext || window.webkitAudioContext)());
+    const oscillator = ctx.createOscillator();
+    const gain = ctx.createGain();
+    oscillator.type = type;
+    oscillator.frequency.value = frequency;
+    gain.gain.value = volume;
+    oscillator.connect(gain);
+    gain.connect(ctx.destination);
+    oscillator.start();
+    oscillator.stop(ctx.currentTime + duration);
+  } catch {}
+}
+function readyAudio() {
+  if (!state.audioReady) {
+    state.audioReady = true;
+    beep(660, 0.01, 'sine', 0.001);
+  }
+}
 
 function renderTabs() {
   els.track.style.transform = `translateX(-${state.activeIndex * 50}%)`;
-  els.navItems.forEach((item) => {
-    item.classList.toggle('active', Number(item.dataset.target) === state.activeIndex);
-  });
+  els.navItems.forEach((item) => item.classList.toggle('active', Number(item.dataset.target) === state.activeIndex));
 }
 function setActiveIndex(index) {
   state.activeIndex = Math.max(0, Math.min(1, index));
@@ -131,9 +141,15 @@ function resetGameState() {
 function setGameStatus(text) { els.gameStatus.textContent = text; }
 function jump() {
   const g = state.game;
-  if (!g.running || g.jumping) return;
+  readyAudio();
+  if (!g.running) {
+    startGame();
+    return;
+  }
+  if (g.jumping) return;
   g.jumping = true;
   g.velocityY = 14.5;
+  beep(640, 0.05, 'square', 0.025);
 }
 function detectCollision() {
   const g = state.game;
@@ -156,6 +172,8 @@ function endGame() {
   setGameStatus('Crashed');
   els.message.textContent = 'Game Over';
   els.message.classList.add('show');
+  beep(180, 0.12, 'sawtooth', 0.03);
+  vibrate([30, 30, 50]);
 }
 function gameLoop() {
   const g = state.game;
@@ -166,6 +184,7 @@ function gameLoop() {
     g.score += 1;
     g.speed = Math.min(11, g.speed + 0.15);
     els.gameScore.textContent = String(g.score);
+    beep(880, 0.03, 'triangle', 0.015);
   }
   if (g.jumping) {
     g.playerY += g.velocityY;
@@ -182,6 +201,7 @@ function gameLoop() {
   g.frame = requestAnimationFrame(gameLoop);
 }
 function startGame() {
+  readyAudio();
   resetGameState();
   state.game.running = true;
   setGameStatus('Running');
@@ -190,13 +210,33 @@ function startGame() {
   cancelAnimationFrame(state.game.frame);
   gameLoop();
 }
-els.startBtn.addEventListener('click', startGame);
+async function shareScore() {
+  const score = state.game.best;
+  const text = `I scored ${score} in Mini Dino Dash on Base 🎮`;
+  const url = window.location.origin;
+  try {
+    if (navigator.share) {
+      await navigator.share({ title: 'Mini Dino Dash', text, url });
+      return;
+    }
+    await navigator.clipboard.writeText(`${text} ${url}`);
+    els.message.textContent = 'Score copied';
+    els.message.classList.add('show');
+    setTimeout(() => {
+      if (!state.game.running) {
+        els.message.textContent = 'Tap Start';
+      }
+    }, 1200);
+  } catch {}
+}
+els.startBtn.addEventListener('pointerdown', (e) => { e.preventDefault(); startGame(); });
 els.jumpBtn.addEventListener('pointerdown', (e) => { e.preventDefault(); jump(); });
-els.game.addEventListener('click', () => state.game.running ? jump() : startGame());
+els.shareBtn.addEventListener('pointerdown', (e) => { e.preventDefault(); shareScore(); });
+els.game.addEventListener('pointerdown', (e) => { e.preventDefault(); jump(); });
 window.addEventListener('keydown', (e) => {
   if ((e.code === 'Space' || e.code === 'ArrowUp') && state.activeIndex === 0) {
     e.preventDefault();
-    state.game.running ? jump() : startGame();
+    jump();
   }
 });
 
