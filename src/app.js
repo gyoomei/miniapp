@@ -201,16 +201,11 @@ function applyCheckIn() {
   updateCountdown();
   const today = document.getElementById('today-status');
   if (today) today.textContent = 'Done';
-  setCheckInStatus('GM recorded successfully.', 'success');
+  setCheckInStatus('Support sent successfully.', 'success');
 }
 els.connectBtn.addEventListener('click', connectWallet);
 els.checkinBtn.addEventListener('click', async () => {
-  if (!CONTRACT_CONFIG.gmContractAddress) {
-    if (!state.wallet) return setCheckInStatus('Connect wallet first');
-    setCheckInStatus('GM contract address not set yet, running local preview');
-    setTimeout(applyCheckIn, 350);
-    return;
-  }
+  if (!state.wallet) return setCheckInStatus('Connect wallet first', 'warn');
   await gmOnBase();
 });
 

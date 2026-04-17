@@ -3,35 +3,40 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
-    <title>GM on Base + Dino Game</title>
-    <meta name="description" content="Simple modern mini app with check-in and a dino game." />
+    <title>Mini Dino Dash</title>
+    <meta name="description" content="Fresh mini app with a dino game and simple Base support action." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    <script type="module" crossorigin src="/assets/index-BvYTq5d4.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-D-p3kQy3.css">
+    <script type="module" crossorigin src="/assets/index-ChUkTUSj.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-CNn0KIBC.css">
   </head>
   <body>
     <main class="app-shell">
       <section id="swipe-area" class="swipe-area">
         <div id="track" class="track">
-          <section class="screen" data-index="0" data-name="game">
-            <div class="hero-card compact game-hero">
+          <section class="screen game-screen" data-index="0" data-name="game">
+            <div class="hero-card hero-game">
               <span class="eyebrow">Mini Dino Dash</span>
-              <h1>Tap and run.</h1>
-              <p>Simple, fast, and smooth.</p>
-              <div class="hero-orbs"><span></span><span></span><span></span></div>
+              <h1>Fast, smooth, and fun.</h1>
+              <p>Tap to jump and keep the run alive.</p>
             </div>
 
-            <div class="stats-row compact-row two-up">
-              <article class="mini-card score-card"><span>Score</span><strong id="game-score">0</strong></article>
-              <article class="mini-card score-card"><span>Best</span><strong id="best-score">0</strong></article>
+            <div class="stat-grid two-col">
+              <article class="stat-card">
+                <span>Score</span>
+                <strong id="game-score">0</strong>
+              </article>
+              <article class="stat-card">
+                <span>Best</span>
+                <strong id="best-score">0</strong>
+              </article>
             </div>
 
-            <div class="panel compact-panel game-panel">
-              <div class="game-topline">
-                <span class="muted">Status</span>
-                <span id="game-status" class="value small">Ready</span>
+            <section class="panel game-panel">
+              <div class="panel-head">
+                <span class="label">Status</span>
+                <strong id="game-status">Ready</strong>
               </div>
               <div id="game" class="game-area" aria-label="Mini Dino Dash game area">
                 <div class="sky"></div>
@@ -42,47 +47,54 @@
               </div>
               <div class="game-controls">
                 <button id="start-btn" class="btn primary">Start</button>
-                <button id="jump-btn" class="btn ghost">Jump</button>
-                <button id="share-btn" class="btn ghost">Share</button>
+                <button id="jump-btn" class="btn secondary">Jump</button>
+                <button id="share-btn" class="btn secondary">Share</button>
               </div>
-            </div>
+            </section>
           </section>
 
-          <section class="screen" data-index="1" data-name="checkin">
-            <div class="hero-card compact gm-hero">
-              <span class="eyebrow">GM on Base</span>
-              <h1>Onchain tip activity.</h1>
-              <p>A tiny action on Base.</p>
-              <div class="hero-orbs"><span></span><span></span><span></span></div>
+          <section class="screen support-screen" data-index="1" data-name="checkin">
+            <div class="hero-card hero-support">
+              <div>
+                <span class="eyebrow">Support on Base</span>
+                <h1>One clean onchain action.</h1>
+                <p>Connect, tip, and keep your streak moving.</p>
+              </div>
+              <button id="connect-btn" class="btn secondary connect-btn">Connect</button>
             </div>
 
-            <div class="activity-card">
-              <span class="muted">Last activity</span>
-              <strong id="last-activity">No tip yet</strong>
+            <div class="support-summary">
+              <article class="stat-card">
+                <span>Streak</span>
+                <strong id="streak">0</strong>
+              </article>
+              <article class="stat-card">
+                <span>Today</span>
+                <strong id="today-status">TIP</strong>
+              </article>
+              <article class="stat-card">
+                <span>Ready</span>
+                <strong id="countdown">--:--</strong>
+              </article>
             </div>
 
-            <div class="stats-row compact-row">
-              <article class="mini-card"><span>Streak</span><strong id="streak">0</strong></article>
-              <article class="mini-card"><span>Today</span><strong id="today-status">TIP</strong></article>
-              <article class="mini-card"><span>Ready</span><strong id="countdown">--:--</strong></article>
-            </div>
-
-            <div class="panel compact-panel gm-panel">
-              <div class="panel-row">
-                <div>
-                  <div class="muted">Wallet</div>
-                  <div id="wallet-status" class="value">Not connected</div>
+            <section class="panel support-panel">
+              <div class="support-info">
+                <div class="info-row">
+                  <span class="label">Wallet</span>
+                  <strong id="wallet-status" class="truncate">Not connected</strong>
                 </div>
-                <button id="connect-btn" class="btn ghost">Connect wallet</button>
+                <div class="info-row">
+                  <span class="label">Last activity</span>
+                  <strong id="last-activity" class="truncate">No tip yet</strong>
+                </div>
               </div>
-                            
-                <div class="tx-row"><span class="muted">Action mode</span><span id="mode-status" class="value small">Preview</span></div>
-              </div>
-              <div class="gm-actions">
-                <button id="checkin-btn" class="btn primary big">Tip me</button>
+
+              <div class="support-action-wrap">
+                <button id="checkin-btn" class="btn primary support-btn">Tip me</button>
                 <div id="status" class="status status-idle">Waiting for wallet connection</div>
               </div>
-            </div>
+            </section>
           </section>
         </div>
       </section>
