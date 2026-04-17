@@ -6,6 +6,9 @@ export default defineConfig({
     outDir: 'dist',
     sourcemap: false,
     assetsDir: 'assets',
-    minify: 'esbuild'
+    minify: 'esbuild',
+    rollupOptions: {
+      input: 'index.html'
+    }
   }
 });

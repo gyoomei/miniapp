@@ -1,4 +1,5 @@
-import { sdk } from '@farcaster/miniapp-sdk';
+// Import SDK at top level - must be before any other code
+import '@farcaster/miniapp-sdk';
 import './styles.css';
 
 // ─── Constants (extracted from magic numbers) ───
@@ -607,13 +608,13 @@ setInterval(updateCountdown, 1000);
 setInterval(fetchEthPrice, 60_000); // refresh ETH price every minute
 
 // ─── Farcaster Mini App SDK Ready ───
-// CRITICAL: Must call ready() to hide splash screen
-// Using IIFE to ensure it runs after all module init is complete
-;(async () => {
+// CRITICAL: Must call sdk.actions.ready() to hide splash screen
+;(async function initFarcasterSDK() {
+  const { sdk } = await import('@farcaster/miniapp-sdk');
   try {
     await sdk.actions.ready();
-    console.log('[MiniDinoDash] ✅ sdk.actions.ready() SUCCESS');
+    console.log('[MiniDinoDash] ✅ ready() success');
   } catch (e) {
-    console.error('[MiniDinoDash] ❌ sdk.actions.ready() FAILED:', e);
+    console.error('[MiniDinoDash] ❌ ready() failed:', e);
   }
 })();
