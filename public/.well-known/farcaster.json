@@ -2,25 +2,25 @@
   "frame": {
     "name": "Mini Dino Dash",
     "version": "1",
-    "iconUrl": "https://miniapp.sayligood123.workers.dev/icon.png",
-    "homeUrl": "https://miniapp.sayligood123.workers.dev",
-    "imageUrl": "https://miniapp.sayligood123.workers.dev/image.png",
+    "iconUrl": "https://miniapps-rust.vercel.app/icon.png",
+    "homeUrl": "https://miniapps-rust.vercel.app",
+    "imageUrl": "https://miniapps-rust.vercel.app/image.png",
     "buttonTitle": "Play now",
-    "splashImageUrl": "https://miniapp.sayligood123.workers.dev/splash.png",
+    "splashImageUrl": "https://miniapps-rust.vercel.app/splash.png",
     "splashBackgroundColor": "#0F172A",
-    "subtitle": "Play Dino Dash on Base",
-    "description": "Jump, dodge, and chase your high score in a simple onchain mini game.",
+    "subtitle": "Fast dino game on Base",
+    "description": "A fast mini dino game with a small onchain support action on Base.",
     "primaryCategory": "games",
     "screenshotUrls": [
-      "https://miniapp.sayligood123.workers.dev/screenshot1.png"
+      "https://miniapps-rust.vercel.app/screenshot1.png"
     ],
-    "heroImageUrl": "https://miniapp.sayligood123.workers.dev/hero-image.png",
-    "tags": ["game", "dino", "base", "arcade", "farcaster"],
-    "tagline": "Jump and survive on Base",
+    "heroImageUrl": "https://miniapps-rust.vercel.app/hero-image.png",
+    "tags": ["dino", "game", "base", "miniapp", "arcade"],
+    "tagline": "Tap, run, and support on Base",
     "ogTitle": "Mini Dino Dash",
-    "ogImageUrl": "https://miniapp.sayligood123.workers.dev/screenshot1.png",
-    "ogDescription": "Play a fast dino-style mini game, beat your high score, and keep running.",
-    "castShareUrl": "https://miniapp.sayligood123.workers.dev"
+    "ogImageUrl": "https://miniapps-rust.vercel.app/screenshot1.png",
+    "ogDescription": "Play a fast dino-style mini game and support with a small onchain action on Base.",
+    "castShareUrl": "https://miniapps-rust.vercel.app"
   },
   "accountAssociation": {
     "header": "",
