@@ -29,7 +29,7 @@ const CONTRACT_CONFIG = {
   chainName: 'Base',
   chainIdHex: '0x2105',
   tipTargetAddress: '0x92C82520907b6Cfe61E363fe0E9f6B7c82fC7D59',
-  tipAmountWeiHex: '0x1f0a7c000'
+  tipAmountWeiHex: '0x1'
 };
 
 async function refreshOnchainUi() { return; }
