@@ -102,3 +102,14 @@
 @media (max-width:480px){
   .gm-actions{transform:translateY(-14px)}
 }
+
+.screen[data-name='checkin']{justify-content:flex-start}
+.gm-panel{flex:1;display:flex;flex-direction:column;min-height:300px}
+.gm-actions{margin-top:0;padding-top:18px;padding-bottom:86px;transform:translateY(-26px)}
+.gm-panel .status{min-height:64px;margin-top:2px}
+.bottom-nav{padding-bottom:calc(9px + env(safe-area-inset-bottom, 0px))}
+@media (max-width:480px){
+  .app-shell{padding-bottom:128px}
+  .gm-actions{padding-bottom:96px;transform:translateY(-30px)}
+  .gm-panel .status{min-height:72px}
+}
