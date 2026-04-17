@@ -496,3 +496,9 @@ button {
     width: calc(100vw - 18px);
   }
 }
+
+.tip-note{font-size:10px;letter-spacing:.01em;opacity:.72}
+.label{font-size:10px;opacity:.78}
+.support-wallet,.support-activity{font-size:12px;font-weight:500;color:#d8e2f2}
+.support-info{gap:12px}
+.support-panel{gap:14px}
