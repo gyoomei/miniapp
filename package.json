@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "deploy": "npm run build && wrangler deploy",
+    "deploy": "npm run build",
     "preview": "npm run build && wrangler dev"
   },
   "devDependencies": {
