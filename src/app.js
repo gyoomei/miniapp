@@ -22,6 +22,46 @@ const state = {
 };
 
 const $ = (id) => document.getElementById(id);
+
+const CONTRACT_CONFIG = {
+  chainName: 'Base',
+  chainIdHex: '0x2105',
+  gmContractAddress: '',
+  badgeContractAddress: ''
+};
+
+async function ensureBaseNetwork() {
+  if (!window.ethereum?.request) return false;
+  try {
+    const currentChainId = await window.ethereum.request({ method: 'eth_chainId' });
+    if (currentChainId === CONTRACT_CONFIG.chainIdHex) return true;
+    await window.ethereum.request({
+      method: 'wallet_switchEthereumChain',
+      params: [{ chainId: CONTRACT_CONFIG.chainIdHex }]
+    });
+    return true;
+  } catch (error) {
+    console.error('switch network failed', error);
+    return false;
+  }
+}
+
+async function gmOnBase() {
+  if (!state.wallet) {
+    setCheckInStatus('Connect wallet first');
+    return;
+  }
+  if (!CONTRACT_CONFIG.gmContractAddress) {
+    setCheckInStatus('GM contract address not set yet');
+    return;
+  }
+  const ok = await ensureBaseNetwork();
+  if (!ok) {
+    setCheckInStatus('Please switch wallet to Base');
+    return;
+  }
+  setCheckInStatus('Contract integration placeholder: ready for gm() call');
+}
 const els = {
   track: $('track'), swipeArea: $('swipe-area'), navItems: [...document.querySelectorAll('.nav-item')],
   walletStatus: $('wallet-status'), streak: $('streak'), points: $('points'), countdown: $('countdown'),
@@ -118,10 +158,14 @@ function applyCheckIn() {
   setCheckInStatus('GM recorded successfully.');
 }
 els.connectBtn.addEventListener('click', connectWallet);
-els.checkinBtn.addEventListener('click', () => {
-  if (!state.wallet) return setCheckInStatus('Connect wallet first');
-  setCheckInStatus('MVP simulation: contract call placeholder');
-  setTimeout(applyCheckIn, 350);
+els.checkinBtn.addEventListener('click', async () => {
+  if (!CONTRACT_CONFIG.gmContractAddress) {
+    if (!state.wallet) return setCheckInStatus('Connect wallet first');
+    setCheckInStatus('GM contract address not set yet, running local preview');
+    setTimeout(applyCheckIn, 350);
+    return;
+  }
+  await gmOnBase();
 });
 
 function resetGameState() {
