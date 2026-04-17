@@ -27,14 +27,13 @@ const $ = (id) => document.getElementById(id);
 const CONTRACT_CONFIG = {
   chainName: 'Base',
   chainIdHex: '0x2105',
-  gmContractAddress: '',
-  badgeContractAddress: ''
+  tipTargetAddress: '0x92C82520907b6Cfe61E363fe0E9f6B7c82fC7D59',
+  tipAmountWeiHex: '0x5af3107a4000'
 };
 
 async function refreshOnchainUi() {
-  const configured = Boolean(CONTRACT_CONFIG.gmContractAddress);
-  els.contractStatus.textContent = configured ? truncateAddress(CONTRACT_CONFIG.gmContractAddress) : 'Not configured';
-  els.modeStatus.textContent = configured ? 'Onchain ready' : 'Preview';
+  els.contractStatus.textContent = truncateAddress(CONTRACT_CONFIG.tipTargetAddress);
+  els.modeStatus.textContent = 'Tip ready';
 
   if (!state.wallet) {
     els.chainPill.textContent = 'Wallet not connected';
@@ -86,17 +85,35 @@ async function gmOnBase() {
     setCheckInStatus('Connect wallet first', 'warn');
     return;
   }
-  if (!CONTRACT_CONFIG.gmContractAddress) {
-    setCheckInStatus('GM contract address not set yet', 'warn');
-    return;
-  }
   const ok = await ensureBaseNetwork();
   if (!ok) {
     setCheckInStatus('Please switch wallet to Base', 'warn');
     return;
   }
-  setCheckInStatus('Contract integration placeholder: ready for gm() call', 'success');
-  els.modeStatus.textContent = 'Ready to send tx';
+  if (!window.ethereum?.request) {
+    setCheckInStatus('No wallet provider detected', 'warn');
+    return;
+  }
+
+  try {
+    els.modeStatus.textContent = 'Awaiting signature';
+    setCheckInStatus('Confirm the tip transaction in your wallet', 'idle');
+    const txHash = await window.ethereum.request({
+      method: 'eth_sendTransaction',
+      params: [{
+        from: state.wallet,
+        to: CONTRACT_CONFIG.tipTargetAddress,
+        value: CONTRACT_CONFIG.tipAmountWeiHex
+      }]
+    });
+    els.modeStatus.textContent = 'Sent on Base';
+    setCheckInStatus(`Tip sent on Base: ${txHash.slice(0, 10)}...`, 'success');
+    applyCheckIn();
+  } catch (error) {
+    console.error('tip tx failed', error);
+    els.modeStatus.textContent = 'Tip failed';
+    setCheckInStatus('Transaction cancelled or failed', 'warn');
+  }
 }
 const els = {
   track: $('track'), swipeArea: $('swipe-area'), navItems: [...document.querySelectorAll('.nav-item')],
