@@ -89,3 +89,8 @@
 @media (max-width:480px){
   .gm-actions{padding-bottom:26px}
 }
+
+.gm-actions{padding-bottom:10px;transform:translateY(-6px)}
+@media (max-width:480px){
+  .gm-actions{padding-bottom:14px;transform:translateY(-8px)}
+}
