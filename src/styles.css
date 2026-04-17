@@ -10,7 +10,6 @@
   --muted: #93a4bf;
   --blue: #3b82f6;
   --violet: #8b5cf6;
-  --cyan: #22d3ee;
   --shadow: 0 18px 40px rgba(2, 6, 23, 0.34);
 }
 
@@ -157,8 +156,10 @@ button {
 .stat-card span,
 .label,
 .tip-note {
-  font-size: 12px;
+  font-size: 10px;
   color: var(--muted);
+  letter-spacing: 0.01em;
+  opacity: 0.78;
 }
 
 .stat-card strong {
@@ -347,14 +348,14 @@ button {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 16px;
+  gap: 14px;
   min-height: 0;
 }
 
 .support-info {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
 }
 
 .truncate {
@@ -362,6 +363,13 @@ button {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.support-wallet,
+.support-activity {
+  font-size: 12px;
+  font-weight: 500;
+  color: #d8e2f2;
 }
 
 .support-action-wrap {
@@ -496,9 +504,3 @@ button {
     width: calc(100vw - 18px);
   }
 }
-
-.tip-note{font-size:10px;letter-spacing:.01em;opacity:.72}
-.label{font-size:10px;opacity:.78}
-.support-wallet,.support-activity{font-size:12px;font-weight:500;color:#d8e2f2}
-.support-info{gap:12px}
-.support-panel{gap:14px}
