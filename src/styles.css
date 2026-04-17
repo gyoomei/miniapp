@@ -113,3 +113,20 @@
   .gm-actions{padding-bottom:96px;transform:translateY(-30px)}
   .gm-panel .status{min-height:72px}
 }
+
+.support-screen{gap:12px}
+.support-hero{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(239,246,255,.92))}
+.connect-inline{min-width:108px;padding:12px 14px}
+.support-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.support-card{background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(248,250,252,.94));border:1px solid rgba(148,163,184,.16);border-radius:22px;padding:16px;display:flex;flex-direction:column;gap:12px;box-shadow:0 18px 40px rgba(37,99,235,.08)}
+.support-row{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.support-wallet,.support-activity{max-width:58%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:15px;color:#0f172a}
+.support-btn{margin-top:4px}
+.support-status{min-height:56px;margin:0}
+.gm-panel,.gm-actions,.activity-card{all:unset}
+@media (max-width:480px){
+  .support-grid{grid-template-columns:1fr 1fr 1fr}
+  .support-hero{flex-direction:column}
+  .connect-inline{width:100%}
+  .support-wallet,.support-activity{max-width:62%}
+}
