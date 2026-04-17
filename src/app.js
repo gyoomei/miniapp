@@ -4,7 +4,6 @@ const state = {
   activeIndex: 0,
   wallet: null,
   streak: Number(localStorage.getItem('base-checkin-streak') || 0),
-  points: Number(localStorage.getItem('base-checkin-points') || 0),
   lastCheckIn: Number(localStorage.getItem('base-checkin-last') || 0),
   touchStartX: null,
   audioReady: false,
@@ -77,12 +76,10 @@ els.swipeArea.addEventListener('touchend', (e) => {
 function renderCheckIn() {
   els.walletStatus.textContent = state.wallet || 'Not connected';
   els.streak.textContent = String(state.streak);
-  els.points.textContent = String(state.points);
 }
 function setCheckInStatus(text) { els.status.textContent = text; }
 function persistCheckIn() {
   localStorage.setItem('base-checkin-streak', String(state.streak));
-  localStorage.setItem('base-checkin-points', String(state.points));
   localStorage.setItem('base-checkin-last', String(state.lastCheckIn));
 }
 function updateCountdown() {
@@ -112,15 +109,13 @@ function applyCheckIn() {
   const diff = now - state.lastCheckIn;
   if (state.lastCheckIn && diff < 86400000) return setCheckInStatus('Already checked in, wait for next window');
   state.streak = !state.lastCheckIn || diff <= 172800000 ? state.streak + 1 : 1;
-  let reward = 10;
-  if (state.streak % 7 === 0) reward += 30;
-  if (state.streak % 30 === 0) reward += 150;
-  state.points += reward;
   state.lastCheckIn = now;
   persistCheckIn();
   renderCheckIn();
   updateCountdown();
-  setCheckInStatus(`Checked in successfully, +${reward} points`);
+  const today = document.getElementById('today-status');
+  if (today) today.textContent = 'Done';
+  setCheckInStatus('GM recorded successfully.');
 }
 els.connectBtn.addEventListener('click', connectWallet);
 els.checkinBtn.addEventListener('click', () => {
