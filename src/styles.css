@@ -487,3 +487,5 @@ button {
     width: calc(100vw - 18px);
   }
 }
+
+.tip-note{margin-top:-2px;font-size:12px;color:#64748b;text-align:center}
