@@ -219,12 +219,17 @@ button { font: inherit; }
 }
 .player.jumping { animation: player-jump 0.3s ease-in-out; }
 
-/* Obstacle with depth + rotation */
-.obstacle {
+/* Obstacle wrapper (handles movement) */
+.obstacle-wrap {
   position: absolute; left: 0; bottom: var(--g-player-bottom);
   width: var(--g-obs-w); height: var(--g-obs-h);
-  transform-origin: bottom center;
   will-change: transform;
+}
+/* Obstacle (handles wobble animation only) */
+.obstacle {
+  width: 100%; height: 100%;
+  position: relative;
+  transform-origin: bottom center;
 }
 .obstacle::before, .obstacle::after {
   content: ''; position: absolute;

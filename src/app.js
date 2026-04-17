@@ -63,7 +63,7 @@ const els = {
   gameStatus: $('game-status'),
   scoreCard: $('game-score')?.closest('.stat-card'),
   bestCard: $('best-score')?.closest('.stat-card'),
-  player: $('player'), obstacle: $('obstacle'),
+  player: $('player'), obstacle: $('obstacle'), obstacleWrap: $('obstacle-wrap'),
   message: $('message'), game: $('game'),
   startBtn: $('start-btn'), jumpBtn: $('jump-btn'),
   shareBtn: $('share-btn'), themeToggle: $('theme-toggle'),
@@ -441,7 +441,7 @@ function resetGameState() {
   els.gameScore.textContent = '0';
   els.player.style.transform = 'translateY(0px)';
   els.player.classList.remove('jumping');
-  els.obstacle.style.transform = `translateX(${g.obstacleX}px)`;
+  els.obstacleWrap.style.transform = `translateX(${g.obstacleX}px)`;
   els.obstacle.classList.remove('wobble');
   els.message.textContent = 'Tap Start';
   els.message.classList.add('show');
@@ -529,7 +529,7 @@ function gameLoop() {
   }
 
   els.player.style.transform = `translateY(-${g.playerY}px)`;
-  els.obstacle.style.transform = `translateX(${g.obstacleX}px)`;
+  els.obstacleWrap.style.transform = `translateX(${g.obstacleX}px)`;
 
   if (detectCollision()) { endGame(); return; }
   g.frame = requestAnimationFrame(gameLoop);
