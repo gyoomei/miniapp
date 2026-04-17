@@ -97,7 +97,7 @@ async function gmOnBase() {
 
   try {
     els.modeStatus.textContent = 'Awaiting signature';
-    setCheckInStatus('Confirm the tip transaction in your wallet', 'idle');
+    setCheckInStatus('Confirm the onchain activity in your wallet', 'idle');
     const txHash = await window.ethereum.request({
       method: 'eth_sendTransaction',
       params: [{
@@ -107,11 +107,11 @@ async function gmOnBase() {
       }]
     });
     els.modeStatus.textContent = 'Sent on Base';
-    setCheckInStatus(`Tip sent on Base: ${txHash.slice(0, 10)}...`, 'success');
+    setCheckInStatus(`Onchain activity sent: ${txHash.slice(0, 10)}...`, 'success');
     applyCheckIn();
   } catch (error) {
     console.error('tip tx failed', error);
-    els.modeStatus.textContent = 'Tip failed';
+    els.modeStatus.textContent = 'Activity failed';
     setCheckInStatus('Transaction cancelled or failed', 'warn');
   }
 }
