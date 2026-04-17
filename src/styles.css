@@ -80,3 +80,12 @@
   .app-shell{padding-bottom:112px}
   .gm-panel .status{margin-bottom:10px}
 }
+
+.screen[data-name='checkin']{padding-bottom:14px}
+.gm-panel{justify-content:space-between;min-height:0;gap:12px}
+.gm-actions{margin-top:auto;display:flex;flex-direction:column;gap:10px;padding-bottom:20px}
+.gm-panel .status{position:relative;z-index:1;margin:0}
+.bottom-nav{z-index:5}
+@media (max-width:480px){
+  .gm-actions{padding-bottom:26px}
+}
