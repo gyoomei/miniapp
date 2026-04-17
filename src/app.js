@@ -7,6 +7,7 @@ const state = {
   streak: Number(localStorage.getItem('base-checkin-streak') || 0),
   lastCheckIn: Number(localStorage.getItem('base-checkin-last') || 0),
   lastTxHash: localStorage.getItem('base-last-tx-hash') || '',
+  lastTxUrl: localStorage.getItem('base-last-tx-url') || '',
   touchStartX: null,
   audioReady: false,
   theme: localStorage.getItem('miniapp-theme') || 'dark',
@@ -30,7 +31,7 @@ const CONTRACT_CONFIG = {
   chainName: 'Base',
   chainIdHex: '0x2105',
   tipTargetAddress: '0x92C82520907b6Cfe61E363fe0E9f6B7c82fC7D59',
-  tipAmountWeiHex: '0x1'
+  tipAmountWeiHex: '0x3081a263555',
 };
 
 async function refreshOnchainUi() { return; }
@@ -79,7 +80,8 @@ async function gmOnBase() {
       }]
     });
     state.lastTxHash = txHash;
-    setCheckInStatus(`Onchain activity sent: ${txHash.slice(0, 10)}...`, 'success');
+    state.lastTxUrl = `https://basescan.org/tx/${txHash}`;
+    setCheckInStatus(`Support sent on Base: ${txHash.slice(0, 10)}...`, 'success');
     applyCheckIn();
   } catch (error) {
     console.error('tip tx failed', error);
@@ -89,7 +91,7 @@ async function gmOnBase() {
 const els = {
   track: $('track'), swipeArea: $('swipe-area'), navItems: [...document.querySelectorAll('.nav-item')],
   walletStatus: $('wallet-status'), streak: $('streak'), points: $('points'), countdown: $('countdown'),
-  connectBtn: $('connect-btn'), checkinBtn: $('checkin-btn'), status: $('status'), lastActivity: $('last-activity'),
+  connectBtn: $('connect-btn'), checkinBtn: $('checkin-btn'), status: $('status'), lastActivity: $('last-activity'), viewTxBtn: $('view-tx-btn'),
   gameScore: $('game-score'), bestScore: $('best-score'), gameStatus: $('game-status'),
   player: $('player'), obstacle: $('obstacle'), message: $('message'), game: $('game'),
   startBtn: $('start-btn'), jumpBtn: $('jump-btn'), shareBtn: $('share-btn'), themeToggle: $('theme-toggle')
@@ -162,7 +164,8 @@ function renderCheckIn() {
   state.walletLabel = truncateAddress(state.wallet);
   els.walletStatus.textContent = state.walletLabel;
   els.streak.textContent = String(state.streak);
-  els.lastActivity.textContent = state.lastTxHash ? `${state.lastTxHash.slice(0, 8)}...${state.lastTxHash.slice(-4)}` : 'No tip yet';
+  els.lastActivity.textContent = state.lastTxHash ? `${state.lastTxHash.slice(0, 8)}...${state.lastTxHash.slice(-4)}` : 'No support yet';
+  if (els.viewTxBtn) els.viewTxBtn.hidden = !state.lastTxUrl;
   refreshOnchainUi();
 }
 function setCheckInStatus(text, tone = 'idle') {
@@ -181,6 +184,7 @@ function persistCheckIn() {
   localStorage.setItem('base-checkin-streak', String(state.streak));
   localStorage.setItem('base-checkin-last', String(state.lastCheckIn));
   localStorage.setItem('base-last-tx-hash', state.lastTxHash || '');
+  localStorage.setItem('base-last-tx-url', state.lastTxUrl || '');
 }
 function updateCountdown() {
   if (!state.lastCheckIn) return (els.countdown.textContent = 'Ready');
@@ -341,6 +345,7 @@ applyTheme();
 renderCheckIn();
 updateCountdown();
 refreshOnchainUi();
+if (els.viewTxBtn) els.viewTxBtn.addEventListener('click', () => { if (state.lastTxUrl) window.open(state.lastTxUrl, '_blank', 'noopener,noreferrer'); });
 setCheckInStatus('Waiting for wallet connection');
 setGameStatus('Ready');
 resetGameState();

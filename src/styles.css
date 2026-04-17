@@ -561,3 +561,5 @@ button {
 @media (max-width:480px){
   .theme-toggle{right:14px;top:12px}
 }
+
+.support-link{min-height:44px;padding:10px 14px;font-size:13px}
