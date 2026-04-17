@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    <script type="module" crossorigin src="/assets/index-DOhFajIW.js"></script>
+    <script type="module" crossorigin src="/assets/index-mgOyH-k1.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/index-D-p3kQy3.css">
   </head>
   <body>
@@ -21,6 +21,8 @@
               <h1>Tap and survive.</h1>
               <p>Swipe left for check-in.</p>
             </div>
+
+            <div class="feature-strip"><span>Fast tap controls</span><span>Zero clutter</span><span>Swipe tabs</span></div>
 
             <div class="stats-row compact-row two-up">
               <article class="mini-card score-card"><span>Score</span><strong id="game-score">0</strong></article>
@@ -54,6 +56,8 @@
               <p>Say GM every day on Base.</p>
             </div>
 
+            <div class="feature-strip gm-strip"><span>Base-ready</span><span>Daily streak</span><span>Wallet connect</span></div>
+
             <div class="stats-row compact-row">
               <article class="mini-card"><span>Streak</span><strong id="streak">0</strong></article>
               <article class="mini-card"><span>Today</span><strong id="today-status">GM</strong></article>
@@ -66,14 +70,14 @@
                   <div class="muted">Wallet</div>
                   <div id="wallet-status" class="value">Not connected</div>
                 </div>
-                <button id="connect-btn" class="btn ghost">Connect</button>
+                <button id="connect-btn" class="btn ghost">Connect wallet</button>
               </div>
               <div class="reward-line">
                 <span class="muted">Focus</span>
                 <span class="value small">Daily GM streaks on Base</span>
               </div>
               <button id="checkin-btn" class="btn primary big">GM now</button>
-              <div id="status" class="status">Waiting for wallet connection</div>
+              <div id="status" class="status status-idle">Waiting for wallet connection</div>
             </div>
           </section>
         </div>

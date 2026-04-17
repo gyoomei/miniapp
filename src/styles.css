@@ -24,3 +24,19 @@
 .bottom-nav{bottom:12px}
 .nav-item{min-height:56px;justify-content:center}
 .nav-item span:last-child{font-size:12px}
+
+.feature-strip{display:flex;gap:8px;flex-wrap:wrap;margin-top:-2px}
+.feature-strip span{padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.04);border:1px solid rgba(148,163,184,.08);color:#d7e5f8;font-size:11px;font-weight:700}
+.gm-strip span{background:rgba(59,130,246,.08)}
+.status{display:flex;align-items:center}
+.status::before{content:'';width:8px;height:8px;border-radius:999px;margin-right:10px;background:#64748b;box-shadow:0 0 0 4px rgba(100,116,139,.15)}
+.status-success{background:rgba(34,197,94,.08);border-color:rgba(34,197,94,.2);color:#dcfce7}
+.status-success::before{background:#22c55e;box-shadow:0 0 0 4px rgba(34,197,94,.15)}
+.status-warn{background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.2);color:#fef3c7}
+.status-warn::before{background:#f59e0b;box-shadow:0 0 0 4px rgba(245,158,11,.15)}
+.status-idle{background:rgba(255,255,255,.03)}
+.btn.ghost{background:rgba(255,255,255,.035)}
+.btn.ghost:hover{background:rgba(255,255,255,.06)}
+.hero-card h1{letter-spacing:-.03em}
+.game-panel .btn.primary{background:linear-gradient(135deg,#06b6d4,#8b5cf6)}
+#wallet-status{max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}

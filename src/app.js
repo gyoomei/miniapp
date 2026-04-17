@@ -49,19 +49,19 @@ async function ensureBaseNetwork() {
 
 async function gmOnBase() {
   if (!state.wallet) {
-    setCheckInStatus('Connect wallet first');
+    setCheckInStatus('Connect wallet first', 'warn');
     return;
   }
   if (!CONTRACT_CONFIG.gmContractAddress) {
-    setCheckInStatus('GM contract address not set yet');
+    setCheckInStatus('GM contract address not set yet', 'warn');
     return;
   }
   const ok = await ensureBaseNetwork();
   if (!ok) {
-    setCheckInStatus('Please switch wallet to Base');
+    setCheckInStatus('Please switch wallet to Base', 'warn');
     return;
   }
-  setCheckInStatus('Contract integration placeholder: ready for gm() call');
+  setCheckInStatus('Contract integration placeholder: ready for gm() call', 'success');
 }
 const els = {
   track: $('track'), swipeArea: $('swipe-area'), navItems: [...document.querySelectorAll('.nav-item')],
@@ -125,13 +125,16 @@ function renderCheckIn() {
   els.walletStatus.textContent = state.walletLabel;
   els.streak.textContent = String(state.streak);
 }
-function setCheckInStatus(text) { els.status.textContent = text; }
+function setCheckInStatus(text, tone = 'idle') {
+  els.status.textContent = text;
+  els.status.className = `status status-${tone}`;
+}
 
 if (window.ethereum?.on) {
   window.ethereum.on('accountsChanged', (accounts) => {
     state.wallet = Array.isArray(accounts) ? (accounts[0] || null) : null;
     renderCheckIn();
-    setCheckInStatus(state.wallet ? `Wallet switched: ${state.walletLabel}` : 'Wallet disconnected');
+    setCheckInStatus(state.wallet ? `Wallet switched: ${state.walletLabel}` : 'Wallet disconnected', state.wallet ? 'success' : 'warn');
   });
 }
 function persistCheckIn() {
@@ -155,15 +158,15 @@ async function connectWallet() {
       state.wallet = '0xDEMO0000DEMO0000';
     }
     renderCheckIn();
-    setCheckInStatus(state.wallet ? `Wallet connected: ${state.walletLabel}` : 'Wallet connection failed');
+    setCheckInStatus(state.wallet ? `Wallet connected: ${state.walletLabel}` : 'Wallet connection failed', state.wallet ? 'success' : 'warn');
   } catch {
-    setCheckInStatus('Wallet connect failed');
+    setCheckInStatus('Wallet connect failed', 'warn');
   }
 }
 function applyCheckIn() {
   const now = Date.now();
   const diff = now - state.lastCheckIn;
-  if (state.lastCheckIn && diff < 86400000) return setCheckInStatus('Already checked in, wait for next window');
+  if (state.lastCheckIn && diff < 86400000) return setCheckInStatus('Already checked in, wait for next window', 'warn');
   state.streak = !state.lastCheckIn || diff <= 172800000 ? state.streak + 1 : 1;
   state.lastCheckIn = now;
   persistCheckIn();
@@ -171,7 +174,7 @@ function applyCheckIn() {
   updateCountdown();
   const today = document.getElementById('today-status');
   if (today) today.textContent = 'Done';
-  setCheckInStatus('GM recorded successfully.');
+  setCheckInStatus('GM recorded successfully.', 'success');
 }
 els.connectBtn.addEventListener('click', connectWallet);
 els.checkinBtn.addEventListener('click', async () => {
@@ -224,7 +227,7 @@ function endGame() {
     localStorage.setItem('mini-dino-best', String(g.best));
     els.bestScore.textContent = String(g.best);
   }
-  setGameStatus('Crashed');
+  setGameStatus('Crashed out');
   els.message.textContent = 'Game Over';
   els.message.classList.add('show');
   beep(180, 0.12, 'sawtooth', 0.03);
@@ -259,7 +262,7 @@ function startGame() {
   readyAudio();
   resetGameState();
   state.game.running = true;
-  setGameStatus('Running');
+  setGameStatus('Running hot');
   els.message.textContent = '';
   els.message.classList.remove('show');
   cancelAnimationFrame(state.game.frame);
