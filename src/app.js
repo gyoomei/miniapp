@@ -6,6 +6,7 @@ const state = {
   walletLabel: 'Not connected',
   streak: Number(localStorage.getItem('base-checkin-streak') || 0),
   lastCheckIn: Number(localStorage.getItem('base-checkin-last') || 0),
+  lastTxHash: localStorage.getItem('base-last-tx-hash') || '',
   touchStartX: null,
   audioReady: false,
   game: {
@@ -76,6 +77,7 @@ async function gmOnBase() {
         value: CONTRACT_CONFIG.tipAmountWeiHex
       }]
     });
+    state.lastTxHash = txHash;
     setCheckInStatus(`Onchain activity sent: ${txHash.slice(0, 10)}...`, 'success');
     applyCheckIn();
   } catch (error) {
@@ -86,7 +88,7 @@ async function gmOnBase() {
 const els = {
   track: $('track'), swipeArea: $('swipe-area'), navItems: [...document.querySelectorAll('.nav-item')],
   walletStatus: $('wallet-status'), streak: $('streak'), points: $('points'), countdown: $('countdown'),
-  connectBtn: $('connect-btn'), checkinBtn: $('checkin-btn'), status: $('status'),
+  connectBtn: $('connect-btn'), checkinBtn: $('checkin-btn'), status: $('status'), lastActivity: $('last-activity'),
   gameScore: $('game-score'), bestScore: $('best-score'), gameStatus: $('game-status'),
   player: $('player'), obstacle: $('obstacle'), message: $('message'), game: $('game'),
   startBtn: $('start-btn'), jumpBtn: $('jump-btn'), shareBtn: $('share-btn')
@@ -144,6 +146,7 @@ function renderCheckIn() {
   state.walletLabel = truncateAddress(state.wallet);
   els.walletStatus.textContent = state.walletLabel;
   els.streak.textContent = String(state.streak);
+  els.lastActivity.textContent = state.lastTxHash ? `${state.lastTxHash.slice(0, 8)}...${state.lastTxHash.slice(-4)}` : 'No tip yet';
   refreshOnchainUi();
 }
 function setCheckInStatus(text, tone = 'idle') {
@@ -161,6 +164,7 @@ if (window.ethereum?.on) {
 function persistCheckIn() {
   localStorage.setItem('base-checkin-streak', String(state.streak));
   localStorage.setItem('base-checkin-last', String(state.lastCheckIn));
+  localStorage.setItem('base-last-tx-hash', state.lastTxHash || '');
 }
 function updateCountdown() {
   if (!state.lastCheckIn) return (els.countdown.textContent = 'Ready');
