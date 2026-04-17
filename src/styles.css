@@ -71,3 +71,12 @@
 .status{line-height:1.35;min-height:56px;white-space:normal;word-break:break-word;align-items:flex-start;padding-top:11px;padding-bottom:11px}
 .status::before{flex:0 0 auto;margin-top:4px}
 .gm-panel{overflow:visible}
+
+.app-shell{padding-bottom:104px}
+.panel.compact-panel.gm-panel{padding-bottom:18px}
+.gm-panel .status{margin-bottom:6px}
+.bottom-nav{bottom:12px;padding:9px}
+@media (max-width:480px){
+  .app-shell{padding-bottom:112px}
+  .gm-panel .status{margin-bottom:10px}
+}
