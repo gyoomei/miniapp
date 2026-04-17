@@ -31,6 +31,38 @@ const CONTRACT_CONFIG = {
   badgeContractAddress: ''
 };
 
+async function refreshOnchainUi() {
+  const configured = Boolean(CONTRACT_CONFIG.gmContractAddress);
+  els.contractStatus.textContent = configured ? truncateAddress(CONTRACT_CONFIG.gmContractAddress) : 'Not configured';
+  els.modeStatus.textContent = configured ? 'Onchain ready' : 'Preview';
+
+  if (!state.wallet) {
+    els.chainPill.textContent = 'Wallet not connected';
+    els.chainPill.className = 'chain-pill chain-disconnected';
+    els.networkStatus.textContent = 'Connect wallet first';
+    return;
+  }
+
+  if (!window.ethereum?.request) {
+    els.chainPill.textContent = 'Demo wallet';
+    els.chainPill.className = 'chain-pill chain-preview';
+    els.networkStatus.textContent = 'No provider detected';
+    return;
+  }
+
+  try {
+    const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+    const onBase = chainId === CONTRACT_CONFIG.chainIdHex;
+    els.chainPill.textContent = onBase ? 'Connected to Base' : 'Wrong network';
+    els.chainPill.className = `chain-pill ${onBase ? 'chain-connected' : 'chain-warning'}`;
+    els.networkStatus.textContent = onBase ? 'Base mainnet' : `Current ${chainId}`;
+  } catch {
+    els.chainPill.textContent = 'Network unknown';
+    els.chainPill.className = 'chain-pill chain-warning';
+    els.networkStatus.textContent = 'Unable to read chain';
+  }
+}
+
 async function ensureBaseNetwork() {
   if (!window.ethereum?.request) return false;
   try {
@@ -40,9 +72,11 @@ async function ensureBaseNetwork() {
       method: 'wallet_switchEthereumChain',
       params: [{ chainId: CONTRACT_CONFIG.chainIdHex }]
     });
+    await refreshOnchainUi();
     return true;
   } catch (error) {
     console.error('switch network failed', error);
+    await refreshOnchainUi();
     return false;
   }
 }
@@ -62,11 +96,13 @@ async function gmOnBase() {
     return;
   }
   setCheckInStatus('Contract integration placeholder: ready for gm() call', 'success');
+  els.modeStatus.textContent = 'Ready to send tx';
 }
 const els = {
   track: $('track'), swipeArea: $('swipe-area'), navItems: [...document.querySelectorAll('.nav-item')],
   walletStatus: $('wallet-status'), streak: $('streak'), points: $('points'), countdown: $('countdown'),
   connectBtn: $('connect-btn'), checkinBtn: $('checkin-btn'), status: $('status'),
+  chainPill: $('chain-pill'), networkStatus: $('network-status'), contractStatus: $('contract-status'), modeStatus: $('mode-status'),
   gameScore: $('game-score'), bestScore: $('best-score'), gameStatus: $('game-status'),
   player: $('player'), obstacle: $('obstacle'), message: $('message'), game: $('game'),
   startBtn: $('start-btn'), jumpBtn: $('jump-btn'), shareBtn: $('share-btn')
@@ -124,6 +160,7 @@ function renderCheckIn() {
   state.walletLabel = truncateAddress(state.wallet);
   els.walletStatus.textContent = state.walletLabel;
   els.streak.textContent = String(state.streak);
+  refreshOnchainUi();
 }
 function setCheckInStatus(text, tone = 'idle') {
   els.status.textContent = text;
@@ -159,8 +196,10 @@ async function connectWallet() {
     }
     renderCheckIn();
     setCheckInStatus(state.wallet ? `Wallet connected: ${state.walletLabel}` : 'Wallet connection failed', state.wallet ? 'success' : 'warn');
+    await refreshOnchainUi();
   } catch {
     setCheckInStatus('Wallet connect failed', 'warn');
+    await refreshOnchainUi();
   }
 }
 function applyCheckIn() {
@@ -175,6 +214,7 @@ function applyCheckIn() {
   const today = document.getElementById('today-status');
   if (today) today.textContent = 'Done';
   setCheckInStatus('GM recorded successfully.', 'success');
+  els.modeStatus.textContent = 'Preview updated';
 }
 els.connectBtn.addEventListener('click', connectWallet);
 els.checkinBtn.addEventListener('click', async () => {
@@ -301,6 +341,7 @@ window.addEventListener('keydown', (e) => {
 els.bestScore.textContent = String(state.game.best);
 renderCheckIn();
 updateCountdown();
+refreshOnchainUi();
 setCheckInStatus('Waiting for wallet connection');
 setGameStatus('Ready');
 resetGameState();

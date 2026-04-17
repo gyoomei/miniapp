@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    <script type="module" crossorigin src="/assets/index-B_t4P0dt.js"></script>
+    <script type="module" crossorigin src="/assets/index-DO7glDwI.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/index-D-p3kQy3.css">
   </head>
   <body>
@@ -61,6 +61,11 @@
 
             <div class="feature-strip gm-strip"><span>Base-ready</span><span>Daily streak</span><span>Wallet connect</span></div>
 
+            <div class="chain-banner">
+              <span id="chain-pill" class="chain-pill chain-disconnected">Wallet not connected</span>
+              <span class="chain-note">Base mainnet flow</span>
+            </div>
+
             <div class="stats-row compact-row">
               <article class="mini-card"><span>Streak</span><strong id="streak">0</strong></article>
               <article class="mini-card"><span>Today</span><strong id="today-status">GM</strong></article>
@@ -80,7 +85,12 @@
                 <span class="muted">Focus</span>
                 <span class="value small">Daily GM streaks on Base</span>
               </div>
-              <button id="checkin-btn" class="btn primary big">GM now</button>
+              <div class="tx-panel">
+                <div class="tx-row"><span class="muted">Network</span><span id="network-status" class="value small">Base not checked</span></div>
+                <div class="tx-row"><span class="muted">Contract</span><span id="contract-status" class="value small">Not configured</span></div>
+                <div class="tx-row"><span class="muted">Mode</span><span id="mode-status" class="value small">Preview</span></div>
+              </div>
+              <button id="checkin-btn" class="btn primary big">GM on Base</button>
               <div id="status" class="status status-idle">Waiting for wallet connection</div>
             </div>
           </section>
