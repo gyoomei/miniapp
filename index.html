@@ -4,7 +4,21 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
     <title>Mini Dino Dash</title>
-    <meta name="description" content="Fresh mini app with a dino game and simple Base support action." />
+    <meta name="description" content="Play a fast dino-style mini game and send a tiny onchain support on Base." />
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Mini Dino Dash" />
+    <meta property="og:description" content="Jump, dodge, and run. A fast mini game with a tiny onchain twist on Base." />
+    <meta property="og:image" content="https://miniapps-rust.vercel.app/screenshot1.png" />
+    <meta property="og:url" content="https://miniapps-rust.vercel.app" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <!-- FarCast Frame -->
+    <meta name="fc:frame" content="vNext" />
+    <meta name="fc:frame:image" content="https://miniapps-rust.vercel.app/hero-image.png" />
+    <meta name="fc:frame:button:1" content="Play Mini Dino Dash" />
+    <meta name="fc:frame:button:1:action" content="launch_frame" />
+    <meta name="fc:frame:button:2" content="Support on Base ⚡" />
+    <meta name="fc:frame:button:2:action" content="launch_frame" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -24,13 +38,14 @@
             </div>
 
             <div class="stat-grid two-col">
-              <article class="stat-card">
+              <article class="stat-card score-card">
                 <span>Score</span>
                 <strong id="game-score">0</strong>
               </article>
-              <article class="stat-card">
+              <article class="stat-card best-card">
                 <span>Best</span>
                 <strong id="best-score">0</strong>
+                <span class="streak-badge" id="streak-badge" aria-label="streak count" hidden>🔥</span>
               </article>
             </div>
 
@@ -39,12 +54,29 @@
                 <span class="label">Status</span>
                 <strong id="game-status">Ready</strong>
               </div>
-              <div id="game" class="game-area" aria-label="Mini Dino Dash game area">
-                <div class="sky"></div>
+              <div id="game" class="game-area" role="application" aria-label="Mini Dino Dash game area" aria-live="polite" aria-atomic="false">
+                <div class="sky">
+                  <div class="stars-layer" aria-hidden="true">
+                    <span class="star" style="--sx:12%;--sy:8%;--ss:1.2s"></span>
+                    <span class="star" style="--sx:28%;--sy:15%;--ss:1.8s"></span>
+                    <span class="star" style="--sx:55%;--sy:5%;--ss:1.5s"></span>
+                    <span class="star" style="--sx:72%;--sy:18%;--ss:2.1s"></span>
+                    <span class="star" style="--sx:88%;--sy:10%;--ss:1.3s"></span>
+                    <span class="star" style="--sx:40%;--sy:22%;--ss:1.7s"></span>
+                    <span class="star" style="--sx:6%;--sy:28%;--ss:2.0s"></span>
+                    <span class="star" style="--sx:62%;--sy:3%;--ss:1.4s"></span>
+                    <span class="star" style="--sx:35%;--sy:12%;--ss:1.9s"></span>
+                    <span class="star" style="--sx:80%;--sy:25%;--ss:1.6s"></span>
+                    <span class="star" style="--sx:18%;--sy:32%;--ss:2.2s"></span>
+                    <span class="star" style="--sx:92%;--sy:6%;--ss:1.1s"></span>
+                  </div>
+                </div>
+                <div class="ground-scroll" aria-hidden="true"></div>
                 <div class="ground-line"></div>
-                <div id="player" class="player"></div>
-                <div id="obstacle" class="obstacle"></div>
+                <div id="player" class="player" aria-hidden="true"></div>
+                <div id="obstacle" class="obstacle" aria-hidden="true"></div>
                 <div id="message" class="message show">Tap Start</div>
+                <div id="crash-flash" class="crash-flash" aria-hidden="true"></div>
               </div>
               <div class="game-controls">
                 <button id="start-btn" class="btn primary">Start</button>
@@ -65,17 +97,18 @@
             </div>
 
             <div class="support-summary">
-              <article class="stat-card">
+              <article class="stat-card streak-card">
                 <span>Streak</span>
                 <strong id="streak">0</strong>
+                <span class="fire-label" id="fire-label" aria-live="polite"></span>
               </article>
               <article class="stat-card">
                 <span>Today</span>
-                <strong id="today-status">TIP</strong>
+                <strong id="today-status">—</strong>
               </article>
               <article class="stat-card">
                 <span>Ready</span>
-                <strong id="countdown">--:--</strong>
+                <strong id="countdown">—</strong>
               </article>
             </div>
 
@@ -92,10 +125,10 @@
               </div>
 
               <div class="support-action-wrap">
-                <button id="checkin-btn" class="btn primary support-btn">Support on Base</button>
-                <div class="tip-note">About $0.01 on Base, plus gas</div>
-                <button id="view-tx-btn" class="btn secondary support-link" hidden>View on Basescan</button>
-                <div id="status" class="status status-idle">Waiting for wallet connection</div>
+                <button id="checkin-btn" class="btn primary support-btn">Support on Base ⚡</button>
+                <div class="tip-note" id="tip-note">Loading gas estimate…</div>
+                <button id="view-tx-btn" class="btn secondary support-link" hidden>View on Basescan ↗</button>
+                <div id="status" class="status status-idle" role="status" aria-live="polite">Waiting for wallet connection</div>
               </div>
             </section>
           </section>
@@ -103,9 +136,9 @@
       </section>
     </main>
 
-    <nav class="bottom-nav">
-      <button class="nav-item active" data-target="0"><span class="nav-icon">🎮</span><span>Game</span></button>
-      <button class="nav-item" data-target="1"><span class="nav-icon">⚡</span><span>Support</span></button>
+    <nav class="bottom-nav" role="tablist" aria-label="App tabs">
+      <button class="nav-item active" data-target="0" role="tab" aria-selected="true" aria-controls="game-screen" id="tab-game"><span class="nav-icon">🎮</span><span>Game</span><span class="nav-pill" aria-hidden="true"></span></button>
+      <button class="nav-item" data-target="1" role="tab" aria-selected="false" aria-controls="support-screen" id="tab-support"><span class="nav-icon">⚡</span><span>Support</span><span class="nav-pill" aria-hidden="true"></span></button>
     </nav>
   </body>
 </html>
