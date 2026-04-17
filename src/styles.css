@@ -68,3 +68,6 @@
 .tx-panel{display:grid;gap:8px;margin:4px 0 14px;padding:12px;border-radius:16px;background:rgba(255,255,255,.82);border:1px solid rgba(148,163,184,.08)}
 
 .hero-card::after{opacity:.55}.nav-item.active{color:#fff}.status{color:#334155}.player::before{background:#1e293b;box-shadow:14px 0 0 #1e293b}
+.status{line-height:1.35;min-height:56px;white-space:normal;word-break:break-word;align-items:flex-start;padding-top:11px;padding-bottom:11px}
+.status::before{flex:0 0 auto;margin-top:4px}
+.gm-panel{overflow:visible}
