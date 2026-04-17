@@ -97,3 +97,8 @@
 
 .activity-card{background:rgba(255,255,255,.82);border:1px solid rgba(148,163,184,.16);border-radius:18px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;box-shadow:0 12px 26px rgba(37,99,235,.06)}
 .activity-card strong{font-size:15px;letter-spacing:-.01em;color:#0f172a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.gm-actions{transform:translateY(-12px)}
+@media (max-width:480px){
+  .gm-actions{transform:translateY(-14px)}
+}
