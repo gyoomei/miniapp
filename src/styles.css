@@ -5,3 +5,22 @@
 
 .game-controls{grid-template-columns:repeat(3,minmax(0,1fr));}
 .btn{touch-action:manipulation;user-select:none;}
+
+.hero-card,.panel{background:linear-gradient(180deg,rgba(15,23,42,.84),rgba(15,23,42,.68));}
+.hero-card{position:relative;overflow:hidden}
+.hero-card::after{content:'';position:absolute;inset:auto -20% -35% auto;width:180px;height:180px;border-radius:999px;background:radial-gradient(circle,rgba(59,130,246,.22),transparent 62%);pointer-events:none}
+.compact p{color:#d2def1}
+.eyebrow{letter-spacing:.04em}
+.mini-card{box-shadow:inset 0 1px 0 rgba(255,255,255,.03)}
+.value,.mini-card strong{letter-spacing:-.02em}
+.status{padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.03);border:1px solid rgba(148,163,184,.08);min-height:42px}
+.btn{transition:transform .16s ease,opacity .16s ease,box-shadow .2s ease}
+.btn:active{transform:scale(.98)}
+.btn.primary{box-shadow:0 10px 24px rgba(79,70,229,.28)}
+.btn.big{min-height:48px}
+.panel-row .value.small{max-width:60%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.game-area{box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
+.game-topline,.reward-line,.panel-row{padding:2px 0}
+.bottom-nav{bottom:12px}
+.nav-item{min-height:56px;justify-content:center}
+.nav-item span:last-child{font-size:12px}

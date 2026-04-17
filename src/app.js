@@ -3,6 +3,7 @@ import './styles.css';
 const state = {
   activeIndex: 0,
   wallet: null,
+  walletLabel: 'Not connected',
   streak: Number(localStorage.getItem('base-checkin-streak') || 0),
   lastCheckIn: Number(localStorage.getItem('base-checkin-last') || 0),
   touchStartX: null,
@@ -113,11 +114,26 @@ els.swipeArea.addEventListener('touchend', (e) => {
   state.touchStartX = null;
 }, { passive: true });
 
+function truncateAddress(address) {
+  if (!address || typeof address !== 'string') return 'Not connected';
+  if (!address.startsWith('0x') || address.length < 12) return address;
+  return `${address.slice(0, 6)}...${address.slice(-4)}`;
+}
+
 function renderCheckIn() {
-  els.walletStatus.textContent = state.wallet || 'Not connected';
+  state.walletLabel = truncateAddress(state.wallet);
+  els.walletStatus.textContent = state.walletLabel;
   els.streak.textContent = String(state.streak);
 }
 function setCheckInStatus(text) { els.status.textContent = text; }
+
+if (window.ethereum?.on) {
+  window.ethereum.on('accountsChanged', (accounts) => {
+    state.wallet = Array.isArray(accounts) ? (accounts[0] || null) : null;
+    renderCheckIn();
+    setCheckInStatus(state.wallet ? `Wallet switched: ${state.walletLabel}` : 'Wallet disconnected');
+  });
+}
 function persistCheckIn() {
   localStorage.setItem('base-checkin-streak', String(state.streak));
   localStorage.setItem('base-checkin-last', String(state.lastCheckIn));
@@ -134,12 +150,12 @@ async function connectWallet() {
   try {
     if (window.ethereum?.request) {
       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-      state.wallet = accounts?.[0] || null;
+      state.wallet = Array.isArray(accounts) ? (accounts[0] || null) : null;
     } else {
-      state.wallet = 'Demo wallet connected';
+      state.wallet = '0xDEMO0000DEMO0000';
     }
     renderCheckIn();
-    setCheckInStatus(state.wallet ? 'Wallet connected, ready to check in' : 'Wallet connection failed');
+    setCheckInStatus(state.wallet ? `Wallet connected: ${state.walletLabel}` : 'Wallet connection failed');
   } catch {
     setCheckInStatus('Wallet connect failed');
   }
