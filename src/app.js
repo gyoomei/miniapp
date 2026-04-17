@@ -1,4 +1,3 @@
-import { sdk } from '@farcaster/miniapp-sdk';
 import './styles.css';
 
 // ─── Constants (extracted from magic numbers) ───
@@ -608,10 +607,19 @@ setInterval(fetchEthPrice, 60_000); // refresh ETH price every minute
 
 // ─── Farcaster Mini App SDK Ready ───
 // IMPORTANT: Call ready() to hide splash screen and display the app
-try {
-  await sdk.actions.ready();
-  console.log('[Mini App] sdk.actions.ready() called successfully');
-} catch (err) {
-  console.warn('[Mini App] sdk.actions.ready() failed:', err);
-  // App still works outside Farcaster context
+// NOTE: This is a backup - primary call is in public/farcaster-sdk-init.js
+async function initMiniApp() {
+  try {
+    const { sdk } = await import('@farcaster/miniapp-sdk');
+    await sdk.actions.ready();
+    console.log('[Mini App app.js] ✅ sdk.actions.ready() called');
+  } catch (err) {
+    console.warn('[Mini App app.js] ready() failed:', err);
+  }
 }
+
+// Use 'load' event (fires after all resources loaded, more reliable than DOMContentLoaded)
+window.addEventListener('load', () => {
+  // Small delay to ensure everything is rendered
+  setTimeout(() => initMiniApp(), 50);
+});
