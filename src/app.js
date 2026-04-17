@@ -31,36 +31,7 @@ const CONTRACT_CONFIG = {
   tipAmountWeiHex: '0x5af3107a4000'
 };
 
-async function refreshOnchainUi() {
-  els.contractStatus.textContent = truncateAddress(CONTRACT_CONFIG.tipTargetAddress);
-  els.modeStatus.textContent = 'Tip ready';
-
-  if (!state.wallet) {
-    els.chainPill.textContent = 'Wallet not connected';
-    els.chainPill.className = 'chain-pill chain-disconnected';
-    els.networkStatus.textContent = 'Connect wallet first';
-    return;
-  }
-
-  if (!window.ethereum?.request) {
-    els.chainPill.textContent = 'Demo wallet';
-    els.chainPill.className = 'chain-pill chain-preview';
-    els.networkStatus.textContent = 'No provider detected';
-    return;
-  }
-
-  try {
-    const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-    const onBase = chainId === CONTRACT_CONFIG.chainIdHex;
-    els.chainPill.textContent = onBase ? 'Connected to Base' : 'Wrong network';
-    els.chainPill.className = `chain-pill ${onBase ? 'chain-connected' : 'chain-warning'}`;
-    els.networkStatus.textContent = onBase ? 'Base mainnet' : `Current ${chainId}`;
-  } catch {
-    els.chainPill.textContent = 'Network unknown';
-    els.chainPill.className = 'chain-pill chain-warning';
-    els.networkStatus.textContent = 'Unable to read chain';
-  }
-}
+async function refreshOnchainUi() { return; }
 
 async function ensureBaseNetwork() {
   if (!window.ethereum?.request) return false;
@@ -96,7 +67,6 @@ async function gmOnBase() {
   }
 
   try {
-    els.modeStatus.textContent = 'Awaiting signature';
     setCheckInStatus('Confirm the onchain activity in your wallet', 'idle');
     const txHash = await window.ethereum.request({
       method: 'eth_sendTransaction',
@@ -106,12 +76,10 @@ async function gmOnBase() {
         value: CONTRACT_CONFIG.tipAmountWeiHex
       }]
     });
-    els.modeStatus.textContent = 'Sent on Base';
     setCheckInStatus(`Onchain activity sent: ${txHash.slice(0, 10)}...`, 'success');
     applyCheckIn();
   } catch (error) {
     console.error('tip tx failed', error);
-    els.modeStatus.textContent = 'Activity failed';
     setCheckInStatus('Transaction cancelled or failed', 'warn');
   }
 }
@@ -119,7 +87,6 @@ const els = {
   track: $('track'), swipeArea: $('swipe-area'), navItems: [...document.querySelectorAll('.nav-item')],
   walletStatus: $('wallet-status'), streak: $('streak'), points: $('points'), countdown: $('countdown'),
   connectBtn: $('connect-btn'), checkinBtn: $('checkin-btn'), status: $('status'),
-  chainPill: $('chain-pill'), networkStatus: $('network-status'), contractStatus: $('contract-status'), modeStatus: $('mode-status'),
   gameScore: $('game-score'), bestScore: $('best-score'), gameStatus: $('game-status'),
   player: $('player'), obstacle: $('obstacle'), message: $('message'), game: $('game'),
   startBtn: $('start-btn'), jumpBtn: $('jump-btn'), shareBtn: $('share-btn')
@@ -231,7 +198,6 @@ function applyCheckIn() {
   const today = document.getElementById('today-status');
   if (today) today.textContent = 'Done';
   setCheckInStatus('GM recorded successfully.', 'success');
-  els.modeStatus.textContent = 'Preview updated';
 }
 els.connectBtn.addEventListener('click', connectWallet);
 els.checkinBtn.addEventListener('click', async () => {
