@@ -9,6 +9,7 @@ const state = {
   lastTxHash: localStorage.getItem('base-last-tx-hash') || '',
   touchStartX: null,
   audioReady: false,
+  theme: localStorage.getItem('miniapp-theme') || 'dark',
   game: {
     running: false,
     jumping: false,
@@ -91,7 +92,7 @@ const els = {
   connectBtn: $('connect-btn'), checkinBtn: $('checkin-btn'), status: $('status'), lastActivity: $('last-activity'),
   gameScore: $('game-score'), bestScore: $('best-score'), gameStatus: $('game-status'),
   player: $('player'), obstacle: $('obstacle'), message: $('message'), game: $('game'),
-  startBtn: $('start-btn'), jumpBtn: $('jump-btn'), shareBtn: $('share-btn')
+  startBtn: $('start-btn'), jumpBtn: $('jump-btn'), shareBtn: $('share-btn'), themeToggle: $('theme-toggle')
 };
 
 function vibrate(pattern) {
@@ -118,6 +119,20 @@ function readyAudio() {
   }
 }
 
+function applyTheme() {
+  document.documentElement.dataset.theme = state.theme;
+  if (els.themeToggle) {
+    els.themeToggle.textContent = state.theme === 'dark' ? '🌙' : '☀️';
+    els.themeToggle.setAttribute('aria-label', state.theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+  }
+  localStorage.setItem('miniapp-theme', state.theme);
+}
+
+function toggleTheme() {
+  state.theme = state.theme === 'dark' ? 'light' : 'dark';
+  applyTheme();
+}
+
 function renderTabs() {
   els.track.style.transform = `translateX(-${state.activeIndex * 50}%)`;
   els.navItems.forEach((item) => item.classList.toggle('active', Number(item.dataset.target) === state.activeIndex));
@@ -127,6 +142,7 @@ function setActiveIndex(index) {
   renderTabs();
 }
 els.navItems.forEach((item) => item.addEventListener('click', () => setActiveIndex(Number(item.dataset.target))));
+if (els.themeToggle) els.themeToggle.addEventListener('click', toggleTheme);
 els.swipeArea.addEventListener('touchstart', (e) => { state.touchStartX = e.touches[0].clientX; }, { passive: true });
 els.swipeArea.addEventListener('touchend', (e) => {
   if (state.touchStartX == null) return;
@@ -321,6 +337,7 @@ window.addEventListener('keydown', (e) => {
 });
 
 els.bestScore.textContent = String(state.game.best);
+applyTheme();
 renderCheckIn();
 updateCountdown();
 refreshOnchainUi();
