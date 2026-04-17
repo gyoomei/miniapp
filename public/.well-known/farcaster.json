@@ -1,0 +1,30 @@
+{
+  "frame": {
+    "name": "Mini Dino Dash",
+    "version": "1",
+    "iconUrl": "https://miniapp.sayligood123.workers.dev/icon.png",
+    "homeUrl": "https://miniapp.sayligood123.workers.dev",
+    "imageUrl": "https://miniapp.sayligood123.workers.dev/image.png",
+    "buttonTitle": "Play now",
+    "splashImageUrl": "https://miniapp.sayligood123.workers.dev/splash.png",
+    "splashBackgroundColor": "#0F172A",
+    "subtitle": "Play Dino Dash on Base",
+    "description": "Jump, dodge, and chase your high score in a simple onchain mini game.",
+    "primaryCategory": "games",
+    "screenshotUrls": [
+      "https://miniapp.sayligood123.workers.dev/screenshot1.png"
+    ],
+    "heroImageUrl": "https://miniapp.sayligood123.workers.dev/hero-image.png",
+    "tags": ["game", "dino", "base", "arcade", "farcaster"],
+    "tagline": "Jump and survive on Base",
+    "ogTitle": "Mini Dino Dash",
+    "ogImageUrl": "https://miniapp.sayligood123.workers.dev/screenshot1.png",
+    "ogDescription": "Play a fast dino-style mini game, beat your high score, and keep running.",
+    "castShareUrl": "https://miniapp.sayligood123.workers.dev"
+  },
+  "accountAssociation": {
+    "header": "",
+    "payload": "",
+    "signature": ""
+  }
+}

@@ -1,0 +1,18 @@
+/.well-known/farcaster.json
+  Content-Type: application/json; charset=utf-8
+  Cache-Control: no-cache
+
+/icon.png
+  Cache-Control: public, max-age=86400
+
+/image.png
+  Cache-Control: public, max-age=86400
+
+/splash.png
+  Cache-Control: public, max-age=86400
+
+/screenshot1.png
+  Cache-Control: public, max-age=86400
+
+/hero-image.png
+  Cache-Control: public, max-age=86400
