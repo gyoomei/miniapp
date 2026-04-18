@@ -43,8 +43,6 @@ const state = {
     playerY: 0,
     velocityY: 0,
     frame: null,
-    isDaily: false,
-    dailyRng: null,
   }
 };
 
@@ -461,7 +459,6 @@ async function refreshOnchainUi() {
 function resetGameState() {
   const g = state.game;
   g.score = 0; g.speed = G.INIT_SPEED; g.obstacleX = 340; g.playerY = 0; g.velocityY = 0; g.jumping = false;
-  g.isDaily = false; g.dailyRng = null;
   els.gameScore.textContent = '0';
   els.player.style.transform = 'translateY(0px)';
   els.player.classList.remove('jumping');
@@ -511,10 +508,8 @@ function endGame() {
   const flash = document.getElementById('crash-flash');
   if (flash) { flash.classList.add('active'); setTimeout(() => flash.classList.remove('active'), 300); }
 
-  // Save daily score
-  if (g.isDaily) {
-    saveDailyHighScore(g.score);
-  }
+  // Save to leaderboard
+  saveScore(g.score);
 
   if (g.score > g.best) {
     g.best = g.score;
@@ -522,14 +517,15 @@ function endGame() {
     els.bestScore.textContent = String(g.best);
     glowBestCard();
   }
-  const dailyLabel = g.isDaily ? ' 📅' : '';
   setGameStatus('Crashed');
-  els.message.textContent = `Game Over${dailyLabel}`;
+  els.message.textContent = 'Game Over';
   els.message.classList.add('show');
   // Show share button after game over
   if (els.shareInGame) {
     els.shareInGame.hidden = false;
   }
+  // Update leaderboard
+  renderLeaderboard();
   beep(180, 0.12, 'sawtooth', 0.03);
   vibrate([30, 30, 50]);
 }
@@ -541,9 +537,7 @@ function gameLoop() {
   // Move obstacle
   g.obstacleX -= g.speed;
   if (g.obstacleX < -30) {
-    // Use daily seed RNG for consistent pattern, or Math.random for normal mode
-    const rng = g.isDaily && g.dailyRng ? g.dailyRng : Math.random;
-    g.obstacleX = 340 + rng() * 80;
+    g.obstacleX = 340 + Math.random() * 80;
     g.score += 1;
     g.speed = Math.min(G.MAX_SPEED, g.speed + G.SPEED_INC);
     els.gameScore.textContent = String(g.score);
@@ -623,95 +617,60 @@ function renderFarcasterUser() {
   }
 }
 
-// ─── Daily Challenge ───
-function getDailySeed() {
-  const now = new Date();
-  return now.getFullYear() * 10000 + (now.getMonth() + 1) * 100 + now.getDate();
+// ─── Leaderboard (Personal Top Scores) ───
+const LB_KEY = 'mini-dino-leaderboard';
+const LB_MAX = 5;
+
+function getLeaderboard() {
+  try {
+    return JSON.parse(localStorage.getItem(LB_KEY) || '[]');
+  } catch { return []; }
 }
 
-function seededRandom(seed) {
-  let s = seed;
-  return function() {
-    s = (s * 16807 + 0) % 2147483647;
-    return (s - 1) / 2147483646;
-  };
+function saveScore(score) {
+  if (score <= 0) return;
+  const lb = getLeaderboard();
+  const entry = { score, time: Date.now(), username: fcUser?.username || 'You' };
+  lb.push(entry);
+  lb.sort((a, b) => b.score - a.score);
+  const top = lb.slice(0, LB_MAX);
+  localStorage.setItem(LB_KEY, JSON.stringify(top));
+  return top;
 }
 
-const dailySeed = getDailySeed();
-const dailyRng = seededRandom(dailySeed);
-const isDailyChallenge = () => state.game.isDaily;
-
-function getDailyChallengeKey() {
-  return `mini-dino-daily-${dailySeed}`;
-}
-
-function getDailyHighScore() {
-  return Number(localStorage.getItem(getDailyChallengeKey()) || 0);
-}
-
-function saveDailyHighScore(score) {
-  const key = getDailyChallengeKey();
-  const current = getDailyHighScore();
-  if (score > current) {
-    localStorage.setItem(key, String(score));
+function renderLeaderboard() {
+  const lb = getLeaderboard();
+  const el = $('leaderboard-list');
+  if (!el) return;
+  if (lb.length === 0) {
+    el.innerHTML = '<div class="lb-empty">Play to set your first score! \u{1F3AE}</div>';
+    return;
   }
+  const medals = ['\u{1F947}', '\u{1F948}', '\u{1F949}', '4\uFE0F\u20E3', '5\uFE0F\u20E3'];
+  el.innerHTML = lb.map((entry, i) => {
+    const ago = timeAgo(entry.time);
+    const highlight = i === 0 ? ' lb-top' : '';
+    return `<div class="lb-row${highlight}">
+      <span class="lb-rank">${medals[i] || ''}</span>
+      <span class="lb-score">${entry.score}</span>
+      <span class="lb-time">${ago}</span>
+    </div>`;
+  }).join('');
 }
 
-function getDaysUntilReset() {
-  const now = new Date();
-  const tomorrow = new Date(now);
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  tomorrow.setHours(0, 0, 0, 0);
-  const diff = tomorrow - now;
-  const h = String(Math.floor(diff / 3600000)).padStart(2, '0');
-  const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
-  return `${h}:${m}`;
-}
-
-function renderDailyChallenge() {
-  const dailyScore = getDailyHighScore();
-  const dailyEl = $('daily-challenge-info');
-  if (dailyEl) {
-    dailyEl.innerHTML = `
-      <div class="daily-header">
-        <span class="daily-badge">📅 Daily #${dailySeed % 10000}</span>
-        <span class="daily-reset">Resets in ${getDaysUntilReset()}</span>
-      </div>
-      <div class="daily-stats">
-        <div class="daily-stat">
-          <span>Today's Best</span>
-          <strong id="daily-best">${dailyScore}</strong>
-        </div>
-        <div class="daily-stat">
-          <span>All-Time Best</span>
-          <strong>${state.game.best}</strong>
-        </div>
-      </div>
-      <button id="daily-play-btn" class="btn primary daily-btn">🎯 Play Daily Challenge</button>
-    `;
-    const dailyPlayBtn = $('daily-play-btn');
-    if (dailyPlayBtn) {
-      dailyPlayBtn.addEventListener('click', () => startDailyChallenge());
-    }
-  }
-}
-
-function startDailyChallenge() {
-  state.game.isDaily = true;
-  // Use daily seed for obstacle pattern
-  const rng = seededRandom(dailySeed);
-  state.game.dailyRng = rng;
-  startGame();
-  setGameStatus('📅 Daily Challenge');
+function timeAgo(ts) {
+  const diff = Date.now() - ts;
+  if (diff < 60000) return 'just now';
+  if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
+  if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
+  return `${Math.floor(diff / 86400000)}d ago`;
 }
 
 // ─── Share Score as Cast ───
 async function shareScore() {
   const score = state.game.score || state.game.best;
-  const isDaily = isDailyChallenge();
-  const dailyTag = isDaily ? ' (Daily Challenge)' : '';
   const username = fcUser?.username ? `@${fcUser.username}` : 'I';
-  const text = `${username} scored ${score} in Mini Dino Dash${dailyTag} 🦕⚡\n\nCan you beat me?`;
+  const text = `${username} scored ${score} in Mini Dino Dash 🦕⚡\n\nCan you beat me?`;
   const url = 'https://miniapp-mu-seven.vercel.app';
 
   // Use Farcaster SDK composeCast
@@ -776,9 +735,8 @@ setInterval(fetchEthPrice, 60_000); // refresh ETH price every minute
 // Load Farcaster user context
 loadFarcasterUser();
 
-// Render daily challenge
-renderDailyChallenge();
-setInterval(() => renderDailyChallenge(), 60_000); // refresh countdown
+// Render leaderboard
+renderLeaderboard();
 
 // ─── Farcaster Mini App SDK Ready ───
 // CRITICAL: Must call sdk.actions.ready() to hide splash screen
