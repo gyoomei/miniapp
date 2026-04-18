@@ -1,3 +1,30 @@
-# This file should be at public/.well-known/farcaster.json
-# This root copy is kept for reference only
-# See public/.well-known/farcaster.json for the actual manifest
+{
+  "accountAssociation": {
+    "header": "eyJmaWQiOjI0MTQ3MCwidHlwZSI6ImF1dGgiLCJrZXkiOiIweDkyQzgyNTIwOTA3YjZDZmU2MUUzNjNmZTBFOWY2QjdjODJmQzdENTkifQ",
+    "payload": "eyJkb21haW4iOiJtaW5pYXBwLW11LXNldmVuLnZlcmNlbC5hcHAifQ",
+    "signature": "v2w135epI+lg+rrivuloFD5KAiy4hID6CN+5/bCqd4JY/3+xdu2HSeu1XMRGz/lSkxUIkUXO7y9YKHQV7B+vGhs="
+  },
+  "miniapp": {
+    "version": "1",
+    "name": "Mini Dino Dash",
+    "iconUrl": "https://miniapp-mu-seven.vercel.app/icon.png",
+    "homeUrl": "https://miniapp-mu-seven.vercel.app",
+    "imageUrl": "https://miniapp-mu-seven.vercel.app/image.png",
+    "buttonTitle": "Play now",
+    "splashImageUrl": "https://miniapp-mu-seven.vercel.app/splash.png",
+    "splashBackgroundColor": "#0F172A",
+    "subtitle": "Fast dino game on Base",
+    "description": "A fast mini dino game with a small onchain support action on Base.",
+    "primaryCategory": "games",
+    "screenshotUrls": [
+      "https://miniapp-mu-seven.vercel.app/screenshot1.png"
+    ],
+    "heroImageUrl": "https://miniapp-mu-seven.vercel.app/hero-image.png",
+    "tags": ["dino", "game", "base", "miniapp", "arcade"],
+    "tagline": "Tap, run, and support on Base",
+    "ogTitle": "Mini Dino Dash",
+    "ogImageUrl": "https://miniapp-mu-seven.vercel.app/screenshot1.png",
+    "ogDescription": "Play a fast dino-style mini game and support with a small onchain action on Base.",
+    "castShareUrl": "https://miniapp-mu-seven.vercel.app"
+  }
+}
