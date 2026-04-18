@@ -613,7 +613,7 @@ function renderFarcasterUser() {
 
 // ─── Leaderboard (Personal Top Scores) ───
 const LB_KEY = 'mini-dino-leaderboard';
-const LB_MAX = 5;
+const LB_MAX = 2;
 
 function getLeaderboard() {
   try {
@@ -650,12 +650,14 @@ function renderLeaderboard() {
     el.innerHTML = '<div class="lb-empty">Play to set your first score! \u{1F3AE}</div>';
     return;
   }
-  const medals = ['\u{1F947}', '\u{1F948}', '\u{1F949}', '4\uFE0F\u20E3', '5\uFE0F\u20E3'];
+  const medals = ['\u{1F947}', '\u{1F948}'];
   el.innerHTML = lb.map((entry, i) => {
     const ago = timeAgo(entry.time);
     const highlight = i === 0 ? ' lb-top' : '';
+    const name = entry.username || 'Anon';
     return `<div class="lb-row${highlight}">
       <span class="lb-rank">${medals[i] || ''}</span>
+      <span class="lb-name">${name}</span>
       <span class="lb-score">${entry.score}</span>
       <span class="lb-time">${ago}</span>
     </div>`;
