@@ -68,7 +68,7 @@ const els = {
   player: $('player'), obstacle: $('obstacle'), obstacleWrap: $('obstacle-wrap'),
   message: $('message'), game: $('game'),
   startBtn: $('start-btn'), jumpBtn: $('jump-btn'),
-  shareBtn: $('share-btn'), themeToggle: $('theme-toggle'),
+  shareBtn: $('share-btn'), shareInGame: $('share-in-game'), themeToggle: $('theme-toggle'),
   tipNote: $('tip-note'),
   todayStatus: $('today-status'),
 };
@@ -526,6 +526,10 @@ function endGame() {
   setGameStatus('Crashed');
   els.message.textContent = `Game Over${dailyLabel}`;
   els.message.classList.add('show');
+  // Show share button after game over
+  if (els.shareInGame) {
+    els.shareInGame.hidden = false;
+  }
   beep(180, 0.12, 'sawtooth', 0.03);
   vibrate([30, 30, 50]);
 }
@@ -576,6 +580,8 @@ function startGame() {
   setGameStatus('Running');
   els.message.textContent = '';
   els.message.classList.remove('show');
+  // Hide share button during gameplay
+  if (els.shareInGame) els.shareInGame.hidden = true;
   cancelAnimationFrame(state.game.frame);
   gameLoop();
 }
@@ -742,6 +748,7 @@ async function shareScore() {
 els.startBtn.addEventListener('pointerdown', (e) => { e.preventDefault(); startGame(); });
 els.jumpBtn.addEventListener('pointerdown', (e) => { e.preventDefault(); jump(); });
 els.shareBtn.addEventListener('pointerdown', (e) => { e.preventDefault(); shareScore(); });
+els.shareInGame?.addEventListener('pointerdown', (e) => { e.preventDefault(); shareScore(); });
 els.game?.addEventListener('pointerdown', (e) => {
   e.preventDefault();
   jump();
