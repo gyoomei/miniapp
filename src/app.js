@@ -630,8 +630,18 @@ function getLeaderboard() {
 function saveScore(score) {
   if (score <= 0) return;
   const lb = getLeaderboard();
-  const entry = { score, time: Date.now(), username: fcUser?.username || 'You' };
-  lb.push(entry);
+  const username = fcUser?.username || 'You';
+  // Check if user already has an entry
+  const existing = lb.find(e => e.username === username);
+  if (existing) {
+    // Only update if new score is higher
+    if (score > existing.score) {
+      existing.score = score;
+      existing.time = Date.now();
+    }
+  } else {
+    lb.push({ score, time: Date.now(), username });
+  }
   lb.sort((a, b) => b.score - a.score);
   const top = lb.slice(0, LB_MAX);
   localStorage.setItem(LB_KEY, JSON.stringify(top));
