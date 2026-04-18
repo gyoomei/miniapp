@@ -279,29 +279,6 @@ button { font: inherit; }
 /* ── Controls ── */
 .game-controls { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
 
-/* ── Share After Game ── */
-.share-after-game {
-  position: absolute;
-  bottom: 50px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10;
-  background: linear-gradient(135deg, var(--blue), var(--violet));
-  color: #fff;
-  font-size: 15px;
-  font-weight: 800;
-  padding: 12px 28px;
-  border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(79,70,229,.35);
-  white-space: nowrap;
-  animation: bounceIn 0.4s cubic-bezier(.34,1.56,.64,1);
-}
-.share-after-game:active { transform: translateX(-50%) scale(.96); }
-@keyframes bounceIn {
-  0% { opacity: 0; transform: translateX(-50%) translateY(20px) scale(.8); }
-  100% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
-}
-
 .btn {
   border: none; border-radius: 18px; padding: 13px 14px; min-height: 50px;
   font-weight: 700; cursor: pointer;
