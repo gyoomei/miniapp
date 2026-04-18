@@ -1,5 +1,5 @@
 // Import SDK at top level - must be before any other code
-import '@farcaster/miniapp-sdk';
+import { sdk } from '@farcaster/miniapp-sdk';
 import './styles.css';
 
 // ─── Constants (extracted from magic numbers) ───
@@ -284,16 +284,18 @@ function setCheckInStatus(text, tone = 'idle') {
   els.status.className = `status status-${tone}`;
 }
 
-if (window.ethereum?.on) {
-  window.ethereum.on('accountsChanged', (accounts) => {
-    state.wallet = Array.isArray(accounts) ? (accounts[0] || null) : null;
-    renderCheckIn();
-    setCheckInStatus(
-      state.wallet ? `Wallet switched: ${state.walletLabel}` : 'Wallet disconnected',
-      state.wallet ? 'success' : 'warn'
-    );
-  });
-}
+getProvider().then(provider => {
+  if (provider?.on) {
+    provider.on('accountsChanged', (accounts) => {
+      state.wallet = Array.isArray(accounts) ? (accounts[0] || null) : null;
+      renderCheckIn();
+      setCheckInStatus(
+        state.wallet ? `Wallet switched: ${state.walletLabel}` : 'Wallet disconnected',
+        state.wallet ? 'success' : 'warn'
+      );
+    });
+  }
+}).catch(() => {});
 
 function persistCheckIn() {
   localStorage.setItem('base-checkin-streak', String(state.streak));
@@ -316,13 +318,28 @@ function updateCountdown() {
   if (els.countdown) els.countdown.textContent = `${h}:${m}`;
 }
 
+async function getProvider() {
+  // In Farcaster Mini App, use SDK's provider
+  if (sdk?.wallet?.getEthereumProvider) {
+    return await sdk.wallet.getEthereumProvider();
+  }
+  // Fallback to browser wallet
+  if (window.ethereum?.request) {
+    return window.ethereum;
+  }
+  return null;
+}
+
 async function connectWallet() {
   try {
-    if (window.ethereum?.request) {
-      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    const provider = await getProvider();
+    if (provider?.request) {
+      const accounts = await provider.request({ method: 'eth_requestAccounts' });
       state.wallet = Array.isArray(accounts) ? (accounts[0] || null) : null;
     } else {
-      state.wallet = '0xDEMO0000DEMO0000';
+      state.wallet = null;
+      setCheckInStatus('No wallet provider found', 'warn');
+      return;
     }
     renderCheckIn();
     setCheckInStatus(
@@ -330,17 +347,19 @@ async function connectWallet() {
       state.wallet ? 'success' : 'warn'
     );
     hideWalletNudge();
-  } catch {
+  } catch (err) {
+    console.error('Wallet connect error:', err);
     setCheckInStatus('Wallet connect failed', 'warn');
   }
 }
 
 async function ensureBaseNetwork() {
-  if (!window.ethereum?.request) return false;
+  const provider = await getProvider();
+  if (!provider?.request) return false;
   try {
-    const currentChainId = await window.ethereum.request({ method: 'eth_chainId' });
+    const currentChainId = await provider.request({ method: 'eth_chainId' });
     if (currentChainId === BASE_CHAIN) return true;
-    await window.ethereum.request({
+    await provider.request({
       method: 'wallet_switchEthereumChain',
       params: [{ chainId: BASE_CHAIN }]
     });
@@ -361,14 +380,15 @@ async function gmOnBase() {
     setCheckInStatus('Please switch wallet to Base', 'warn');
     return;
   }
-  if (!window.ethereum?.request) {
+  const provider = await getProvider();
+  if (!provider?.request) {
     setCheckInStatus('No wallet provider detected', 'warn');
     return;
   }
 
   try {
     setCheckInStatus('Confirm the onchain activity in your wallet', 'idle');
-    const txHash = await window.ethereum.request({
+    const txHash = await provider.request({
       method: 'eth_sendTransaction',
       params: [{
         from: state.wallet,
@@ -419,10 +439,11 @@ els.themeToggle?.addEventListener('click', toggleTheme);
 
 // ─── Onchain UI (fetch treasury balance as live stat) ───
 async function refreshOnchainUi() {
-  if (!window.ethereum?.request || !state.wallet) return;
+  const provider = await getProvider();
+  if (!provider?.request || !state.wallet) return;
   try {
-    const blockNumber = await window.ethereum.request({ method: 'eth_blockNumber', params: [] });
-    const balanceHex = await window.ethereum.request({
+    const blockNumber = await provider.request({ method: 'eth_blockNumber', params: [] });
+    const balanceHex = await provider.request({
       method: 'eth_getBalance',
       params: [TIP_TARGET, blockNumber]
     });
@@ -610,7 +631,6 @@ setInterval(fetchEthPrice, 60_000); // refresh ETH price every minute
 // ─── Farcaster Mini App SDK Ready ───
 // CRITICAL: Must call sdk.actions.ready() to hide splash screen
 ;(async function initFarcasterSDK() {
-  const { sdk } = await import('@farcaster/miniapp-sdk');
   try {
     await sdk.actions.ready();
     console.log('[MiniDinoDash] ✅ ready() success');
