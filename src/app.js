@@ -43,6 +43,8 @@ const state = {
     playerY: 0,
     velocityY: 0,
     frame: null,
+    isDaily: false,
+    dailyRng: null,
   }
 };
 
@@ -459,6 +461,7 @@ async function refreshOnchainUi() {
 function resetGameState() {
   const g = state.game;
   g.score = 0; g.speed = G.INIT_SPEED; g.obstacleX = 340; g.playerY = 0; g.velocityY = 0; g.jumping = false;
+  g.isDaily = false; g.dailyRng = null;
   els.gameScore.textContent = '0';
   els.player.style.transform = 'translateY(0px)';
   els.player.classList.remove('jumping');
@@ -508,14 +511,20 @@ function endGame() {
   const flash = document.getElementById('crash-flash');
   if (flash) { flash.classList.add('active'); setTimeout(() => flash.classList.remove('active'), 300); }
 
+  // Save daily score
+  if (g.isDaily) {
+    saveDailyHighScore(g.score);
+  }
+
   if (g.score > g.best) {
     g.best = g.score;
     localStorage.setItem('mini-dino-best', String(g.best));
     els.bestScore.textContent = String(g.best);
     glowBestCard();
   }
+  const dailyLabel = g.isDaily ? ' 📅' : '';
   setGameStatus('Crashed');
-  els.message.textContent = 'Game Over';
+  els.message.textContent = `Game Over${dailyLabel}`;
   els.message.classList.add('show');
   beep(180, 0.12, 'sawtooth', 0.03);
   vibrate([30, 30, 50]);
@@ -528,7 +537,9 @@ function gameLoop() {
   // Move obstacle
   g.obstacleX -= g.speed;
   if (g.obstacleX < -30) {
-    g.obstacleX = 340 + Math.random() * 80;
+    // Use daily seed RNG for consistent pattern, or Math.random for normal mode
+    const rng = g.isDaily && g.dailyRng ? g.dailyRng : Math.random;
+    g.obstacleX = 340 + rng() * 80;
     g.score += 1;
     g.speed = Math.min(G.MAX_SPEED, g.speed + G.SPEED_INC);
     els.gameScore.textContent = String(g.score);
@@ -569,24 +580,153 @@ function startGame() {
   gameLoop();
 }
 
-async function shareScore() {
-  const score = state.game.best;
-  const text = `I scored ${score} in Mini Dino Dash on Base 🎮⚡`;
-  const origin = window.location.origin;
+// ─── Farcaster User Context ───
+let fcUser = null;
 
-  // Try WarCast deep link first
-  const warpcastUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(text + ' ' + origin)}`;
+async function loadFarcasterUser() {
   try {
-    const shareData = { title: 'Mini Dino Dash', text, url: origin };
-    if (navigator.share && navigator.canShare?.(shareData)) {
-      await navigator.share(shareData);
-      return;
+    const context = await sdk.context;
+    if (context?.user) {
+      fcUser = context.user;
+      console.log('[MiniDinoDash] Farcaster user:', fcUser.username);
+      renderFarcasterUser();
     }
-  } catch {}
+  } catch (e) {
+    console.warn('[MiniDinoDash] Could not load Farcaster context:', e);
+  }
+}
 
-  // Fallback: copy + try WarCast
+function renderFarcasterUser() {
+  if (!fcUser) return;
+  // Show username in hero card
+  const heroGame = document.querySelector('.hero-game h1');
+  if (heroGame) {
+    heroGame.textContent = `Hey ${fcUser.displayName || fcUser.username}! Ready to run?`;
+  }
+  // Show avatar in support tab
+  const connectBtn = els.connectBtn;
+  if (connectBtn && fcUser.pfpUrl) {
+    const avatar = document.createElement('img');
+    avatar.src = fcUser.pfpUrl;
+    avatar.className = 'fc-avatar';
+    avatar.alt = fcUser.username;
+    avatar.width = 24;
+    avatar.height = 24;
+    avatar.style.cssText = 'border-radius:50%;margin-right:6px;vertical-align:middle;width:24px;height:24px;';
+    connectBtn.prepend(avatar);
+  }
+}
+
+// ─── Daily Challenge ───
+function getDailySeed() {
+  const now = new Date();
+  return now.getFullYear() * 10000 + (now.getMonth() + 1) * 100 + now.getDate();
+}
+
+function seededRandom(seed) {
+  let s = seed;
+  return function() {
+    s = (s * 16807 + 0) % 2147483647;
+    return (s - 1) / 2147483646;
+  };
+}
+
+const dailySeed = getDailySeed();
+const dailyRng = seededRandom(dailySeed);
+const isDailyChallenge = () => state.game.isDaily;
+
+function getDailyChallengeKey() {
+  return `mini-dino-daily-${dailySeed}`;
+}
+
+function getDailyHighScore() {
+  return Number(localStorage.getItem(getDailyChallengeKey()) || 0);
+}
+
+function saveDailyHighScore(score) {
+  const key = getDailyChallengeKey();
+  const current = getDailyHighScore();
+  if (score > current) {
+    localStorage.setItem(key, String(score));
+  }
+}
+
+function getDaysUntilReset() {
+  const now = new Date();
+  const tomorrow = new Date(now);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  tomorrow.setHours(0, 0, 0, 0);
+  const diff = tomorrow - now;
+  const h = String(Math.floor(diff / 3600000)).padStart(2, '0');
+  const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
+  return `${h}:${m}`;
+}
+
+function renderDailyChallenge() {
+  const dailyScore = getDailyHighScore();
+  const dailyEl = $('daily-challenge-info');
+  if (dailyEl) {
+    dailyEl.innerHTML = `
+      <div class="daily-header">
+        <span class="daily-badge">📅 Daily #${dailySeed % 10000}</span>
+        <span class="daily-reset">Resets in ${getDaysUntilReset()}</span>
+      </div>
+      <div class="daily-stats">
+        <div class="daily-stat">
+          <span>Today's Best</span>
+          <strong id="daily-best">${dailyScore}</strong>
+        </div>
+        <div class="daily-stat">
+          <span>All-Time Best</span>
+          <strong>${state.game.best}</strong>
+        </div>
+      </div>
+      <button id="daily-play-btn" class="btn primary daily-btn">🎯 Play Daily Challenge</button>
+    `;
+    const dailyPlayBtn = $('daily-play-btn');
+    if (dailyPlayBtn) {
+      dailyPlayBtn.addEventListener('click', () => startDailyChallenge());
+    }
+  }
+}
+
+function startDailyChallenge() {
+  state.game.isDaily = true;
+  // Use daily seed for obstacle pattern
+  const rng = seededRandom(dailySeed);
+  state.game.dailyRng = rng;
+  startGame();
+  setGameStatus('📅 Daily Challenge');
+}
+
+// ─── Share Score as Cast ───
+async function shareScore() {
+  const score = state.game.score || state.game.best;
+  const isDaily = isDailyChallenge();
+  const dailyTag = isDaily ? ' (Daily Challenge)' : '';
+  const username = fcUser?.username ? `@${fcUser.username}` : 'I';
+  const text = `${username} scored ${score} in Mini Dino Dash${dailyTag} 🦕⚡\n\nCan you beat me?`;
+  const url = 'https://miniapp-mu-seven.vercel.app';
+
+  // Use Farcaster SDK composeCast
   try {
-    await navigator.clipboard.writeText(`${text} ${origin}`);
+    const result = await sdk.actions.composeCast({
+      text,
+      embeds: [url],
+    });
+    if (result?.cast) {
+      console.log('[MiniDinoDash] Cast shared:', result.cast.hash);
+      beep(880, 0.08, 'sine', 0.03);
+    }
+    return;
+  } catch (e) {
+    console.warn('[MiniDinoDash] composeCast failed, trying fallback:', e);
+  }
+
+  // Fallback: clipboard + warpcast URL
+  const warpcastUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(text + '\n' + url)}`;
+  try {
+    await navigator.clipboard.writeText(`${text}\n${url}`);
     els.message.textContent = 'Copied!';
     els.message.classList.add('show');
     setTimeout(() => {
@@ -596,8 +736,6 @@ async function shareScore() {
       }
     }, 1500);
   } catch {}
-
-  // Open WarCast compose in new tab as bonus
   window.open(warpcastUrl, '_blank', 'noopener,noreferrer');
 }
 
@@ -627,6 +765,13 @@ resetGameState();
 setActiveIndex(0, true);
 setInterval(updateCountdown, 1000);
 setInterval(fetchEthPrice, 60_000); // refresh ETH price every minute
+
+// Load Farcaster user context
+loadFarcasterUser();
+
+// Render daily challenge
+renderDailyChallenge();
+setInterval(() => renderDailyChallenge(), 60_000); // refresh countdown
 
 // ─── Farcaster Mini App SDK Ready ───
 // CRITICAL: Must call sdk.actions.ready() to hide splash screen
