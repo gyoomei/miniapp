@@ -60,7 +60,7 @@ const els = {
   status: $('status'), lastActivity: $('last-activity'),
   viewTxBtn: $('view-tx-btn'),
   gameScore: $('game-score'), bestScore: $('best-score'),
-  gameStatus: $('game-status'),
+  gameStatus: $('game-status'), speedBar: $('speed-bar'),
   scoreCard: $('game-score')?.closest('.stat-card'),
   bestCard: $('best-score')?.closest('.stat-card'),
   player: $('player'), obstacle: $('obstacle'), obstacleWrap: $('obstacle-wrap'),
@@ -464,6 +464,7 @@ function resetGameState() {
   els.player.classList.remove('jumping');
   els.obstacleWrap.style.transform = `translateX(${g.obstacleX}px)`;
   els.obstacle.classList.remove('wobble');
+  if (els.speedBar) els.speedBar.style.width = '0%';
   els.message.textContent = 'Tap Start';
   els.message.classList.add('show');
   els.game?.classList.remove('running');
@@ -536,6 +537,8 @@ function gameLoop() {
     g.obstacleX = 340 + Math.random() * 80;
     g.score += 1;
     g.speed = Math.min(G.MAX_SPEED, g.speed + G.SPEED_INC);
+    const speedPct = Math.max(8, Math.min(100, ((g.speed - G.INIT_SPEED) / (G.MAX_SPEED - G.INIT_SPEED)) * 100));
+    if (els.speedBar) els.speedBar.style.width = `${speedPct}%`;
     els.gameScore.textContent = String(g.score);
     pulseScoreCard();
     showScorePop(280 + Math.random() * 40, 60 + Math.random() * 20);
@@ -613,7 +616,7 @@ function renderFarcasterUser() {
 
 // ─── Leaderboard (Personal Top Scores) ───
 const LB_KEY = 'mini-dino-leaderboard';
-const LB_MAX = 2;
+const LB_MAX = 5;
 
 function getLeaderboard() {
   try {
@@ -650,7 +653,7 @@ function renderLeaderboard() {
     el.innerHTML = '<div class="lb-empty">Play to set your first score! \u{1F3AE}</div>';
     return;
   }
-  const medals = ['\u{1F947}', '\u{1F948}'];
+  const medals = ['\u{1F947}', '\u{1F948}', '\u{1F949}', '4', '5'];
   el.innerHTML = lb.map((entry, i) => {
     const ago = timeAgo(entry.time);
     const highlight = i === 0 ? ' lb-top' : '';

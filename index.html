@@ -20,28 +20,57 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script type="module" src="/src/app.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-BHn9hnOe.css">
   </head>
   <body>
+    <div class="ambient-bg" aria-hidden="true">
+      <span class="orb orb-one"></span>
+      <span class="orb orb-two"></span>
+      <span class="orb orb-three"></span>
+      <span class="grid-glow"></span>
+    </div>
     <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme" title="Toggle theme">🌙</button>
     <main class="app-shell">
+      <header class="app-header" aria-label="Mini Dino Dash header">
+        <div class="brand-lockup">
+          <span class="brand-mark">🦕</span>
+          <div>
+            <strong>Mini Dino Dash</strong>
+            <small>Base-powered runner</small>
+          </div>
+        </div>
+        <span class="network-badge"><span></span> Base</span>
+      </header>
       <section id="swipe-area" class="swipe-area">
         <div id="track" class="track">
           <section class="screen game-screen" data-index="0" data-name="game">
             <div class="hero-card hero-game">
-              <span class="eyebrow">Mini Dino Dash</span>
-              <h1>Fast, smooth, and fun.</h1>
-              <p>Tap to jump and keep the run alive.</p>
+              <div class="hero-copy">
+                <span class="eyebrow">Arcade Run · Farcaster Mini App</span>
+                <h1>Run faster. Dodge cleaner. Own the leaderboard.</h1>
+                <p>Tap, jump, and stack your best score with a slick onchain support loop on Base.</p>
+              </div>
+              <div class="hero-orbit" aria-hidden="true">
+                <span class="orbit-ring"></span>
+                <span class="orbit-core">🦕</span>
+              </div>
+            </div>
+
+            <div class="power-strip" aria-label="Game power indicators">
+              <span><b>⚡</b> Turbo physics</span>
+              <span><b>✦</b> Neon trails</span>
+              <span><b>🏆</b> Top 5 local</span>
             </div>
 
             <div class="stat-grid two-col">
               <article class="stat-card score-card">
                 <span>Score</span>
                 <strong id="game-score">0</strong>
+                <em>current run</em>
               </article>
               <article class="stat-card best-card">
                 <span>Best</span>
                 <strong id="best-score">0</strong>
+                <em>personal record</em>
                 <span class="streak-badge" id="streak-badge" aria-label="streak count" hidden>🔥</span>
               </article>
             </div>
@@ -55,8 +84,14 @@
 
             <section class="panel game-panel">
               <div class="panel-head">
-                <span class="label">Status</span>
-                <strong id="game-status">Ready</strong>
+                <div>
+                  <span class="label">Status</span>
+                  <strong id="game-status">Ready</strong>
+                </div>
+                <div class="speed-meter" aria-label="Speed meter">
+                  <span>Speed</span>
+                  <i><b id="speed-bar"></b></i>
+                </div>
               </div>
               <div id="game" class="game-area" role="application" aria-label="Mini Dino Dash game area" aria-live="polite" aria-atomic="false">
                 <div class="sky">
@@ -79,8 +114,8 @@
                 <div class="ground-line"></div>
                 <div id="player" class="player" aria-hidden="true"></div>
                 <div id="obstacle-wrap" class="obstacle-wrap" aria-hidden="true">
-                <div id="obstacle" class="obstacle"></div>
-              </div>
+                  <div id="obstacle" class="obstacle"></div>
+                </div>
                 <div id="message" class="message show">Tap Start</div>
                 <div id="crash-flash" class="crash-flash" aria-hidden="true"></div>
               </div>
@@ -94,10 +129,10 @@
 
           <section class="screen support-screen" data-index="1" data-name="checkin">
             <div class="hero-card hero-support">
-              <div>
-                <span class="eyebrow">Small onchain support</span>
-                <h1>One clean onchain action.</h1>
-                <p>A tiny support action on Base.</p>
+              <div class="hero-copy">
+                <span class="eyebrow">Base Support Loop</span>
+                <h1>Send a tiny spark onchain.</h1>
+                <p>Connect wallet, support the run, and build your daily streak with one clean Base action.</p>
               </div>
               <button id="connect-btn" class="btn secondary connect-btn">Connect</button>
             </div>
