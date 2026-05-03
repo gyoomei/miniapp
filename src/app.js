@@ -510,9 +510,6 @@ function endGame() {
   const flash = document.getElementById('crash-flash');
   if (flash) { flash.classList.add('active'); setTimeout(() => flash.classList.remove('active'), 300); }
 
-  // Save to leaderboard
-  saveScore(g.score);
-
   if (g.score > g.best) {
     g.best = g.score;
     localStorage.setItem('mini-dino-best', String(g.best));
@@ -522,8 +519,6 @@ function endGame() {
   setGameStatus('Crashed');
   els.message.textContent = 'Game Over';
   els.message.classList.add('show');
-  // Update leaderboard
-  renderLeaderboard();
   beep(180, 0.12, 'sawtooth', 0.03);
   vibrate([30, 30, 50]);
 }
@@ -615,67 +610,6 @@ function renderFarcasterUser() {
   }
 }
 
-// ─── Leaderboard (Personal Top Scores) ───
-const LB_KEY = 'mini-dino-leaderboard';
-const LB_MAX = 5;
-
-function getLeaderboard() {
-  try {
-    return JSON.parse(localStorage.getItem(LB_KEY) || '[]');
-  } catch { return []; }
-}
-
-function saveScore(score) {
-  if (score <= 0) return;
-  const lb = getLeaderboard();
-  const username = fcUser?.username || 'You';
-  // Check if user already has an entry
-  const existing = lb.find(e => e.username === username);
-  if (existing) {
-    // Only update if new score is higher
-    if (score > existing.score) {
-      existing.score = score;
-      existing.time = Date.now();
-    }
-  } else {
-    lb.push({ score, time: Date.now(), username });
-  }
-  lb.sort((a, b) => b.score - a.score);
-  const top = lb.slice(0, LB_MAX);
-  localStorage.setItem(LB_KEY, JSON.stringify(top));
-  return top;
-}
-
-function renderLeaderboard() {
-  const lb = getLeaderboard();
-  const el = $('leaderboard-list');
-  if (!el) return;
-  if (lb.length === 0) {
-    el.innerHTML = '<div class="lb-empty">Play to set your first score! \u{1F3AE}</div>';
-    return;
-  }
-  const medals = ['\u{1F947}', '\u{1F948}', '\u{1F949}', '4', '5'];
-  el.innerHTML = lb.map((entry, i) => {
-    const ago = timeAgo(entry.time);
-    const highlight = i === 0 ? ' lb-top' : '';
-    const name = entry.username || 'Anon';
-    return `<div class="lb-row${highlight}">
-      <span class="lb-rank">${medals[i] || ''}</span>
-      <span class="lb-name">${name}</span>
-      <span class="lb-score">${entry.score}</span>
-      <span class="lb-time">${ago}</span>
-    </div>`;
-  }).join('');
-}
-
-function timeAgo(ts) {
-  const diff = Date.now() - ts;
-  if (diff < 60000) return 'just now';
-  if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
-  if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
-  return `${Math.floor(diff / 86400000)}d ago`;
-}
-
 // ─── Share Score as Cast ───
 async function shareScore() {
   const score = state.game.score || state.game.best;
@@ -743,9 +677,6 @@ setInterval(fetchEthPrice, 60_000); // refresh ETH price every minute
 
 // Load Farcaster user context
 loadFarcasterUser();
-
-// Render leaderboard
-renderLeaderboard();
 
 // ─── Farcaster Mini App SDK Ready ───
 // CRITICAL: Must call sdk.actions.ready() to hide splash screen
