@@ -491,12 +491,13 @@ function detectCollision() {
   const g = state.game;
   const obsLeft = g.obstacleX;
   const obsRight = g.obstacleX + G.OBS_W;
-  const playerFeet = G.HIT_BOTTOM - g.playerY;
+  const playerBottom = G.PLAYER_BOTTOM + g.playerY;
+  const playerTop = playerBottom + G.PLAYER_H;
   return (
     obsRight > G.HIT_LEFT &&
     obsLeft < G.HIT_RIGHT &&
-    playerFeet > G.HIT_TOP &&
-    g.playerY < G.HIT_TOP + (G.HIT_BOTTOM - G.HIT_TOP) * 0.6
+    playerBottom < G.HIT_BOTTOM &&
+    playerTop > G.HIT_TOP
   );
 }
 
