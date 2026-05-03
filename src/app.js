@@ -52,7 +52,7 @@ const $ = (id) => document.getElementById(id);
 const els = {
   track: $('track'), swipeArea: $('swipe-area'),
   navItems: [...document.querySelectorAll('.nav-item')],
-  tabGame: $('tab-game'), tabSupport: $('tab-support'),
+  tabGame: $('tab-game'), tabCheckin: $('tab-checkin'),
   walletStatus: $('wallet-status'), streak: $('streak'),
   fireLabel: $('fire-label'),
   points: $('points'), countdown: $('countdown'),
