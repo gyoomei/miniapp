@@ -20,24 +20,51 @@ const BASE_CHAIN = '0x2105';
 const COINGECKO_API = 'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd';
 const TIP_USD_RAW = 0.000001; // ETH
 
+const storage = {
+  get(key, fallback = '') {
+    try {
+      return window.localStorage?.getItem(key) ?? fallback;
+    } catch {
+      return fallback;
+    }
+  },
+  set(key, value) {
+    try {
+      window.localStorage?.setItem(key, value);
+    } catch {
+      // Storage can be unavailable in privacy-restricted webviews.
+    }
+  }
+};
+
+function isFarcasterClient() {
+  return Boolean(
+    window.parent !== window ||
+    document.referrer.includes('warpcast.com') ||
+    document.referrer.includes('farcaster.xyz') ||
+    navigator.userAgent.includes('Farcaster') ||
+    navigator.userAgent.includes('Warpcast')
+  );
+}
+
 const state = {
   activeIndex: 0,
   wallet: null,
   walletLabel: 'Not connected',
-  streak: Number(localStorage.getItem('base-checkin-streak') || 0),
-  lastCheckIn: Number(localStorage.getItem('base-checkin-last') || 0),
-  lastTxHash: localStorage.getItem('base-last-tx-hash') || '',
-  lastTxUrl: localStorage.getItem('base-last-tx-url') || '',
+  streak: Number(storage.get('base-checkin-streak', '0') || 0),
+  lastCheckIn: Number(storage.get('base-checkin-last', '0') || 0),
+  lastTxHash: storage.get('base-last-tx-hash', ''),
+  lastTxUrl: storage.get('base-last-tx-url', ''),
   touchStartX: null,
   audioReady: false,
-  theme: localStorage.getItem('miniapp-theme') || 'dark',
+  theme: storage.get('miniapp-theme', 'dark'),
   ethPrice: null,       // USD per ETH
   nudgeDismissed: false,
   game: {
     running: false,
     jumping: false,
     score: 0,
-    best: Number(localStorage.getItem('mini-dino-best') || 0),
+    best: Number(storage.get('mini-dino-best', '0') || 0),
     speed: G.INIT_SPEED,
     obstacleX: 340,
     playerY: 0,
@@ -101,7 +128,7 @@ function applyTheme() {
     els.themeToggle.textContent = state.theme === 'dark' ? '🌙' : '☀️';
     els.themeToggle.setAttribute('aria-label', state.theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
   }
-  localStorage.setItem('miniapp-theme', state.theme);
+  storage.set('miniapp-theme', state.theme);
 }
 function toggleTheme() {
   state.theme = state.theme === 'dark' ? 'light' : 'dark';
@@ -116,7 +143,7 @@ function renderTabs() {
     item.classList.toggle('active', active);
     item.setAttribute('aria-selected', String(active));
   });
-  // Auto-nudge on Support tab
+  // Auto-nudge on Check-in tab
   if (state.activeIndex === 1 && !state.wallet && !state.nudgeDismissed) {
     showWalletNudge();
   }
@@ -298,10 +325,10 @@ getProvider().then(provider => {
 }).catch(() => {});
 
 function persistCheckIn() {
-  localStorage.setItem('base-checkin-streak', String(state.streak));
-  localStorage.setItem('base-checkin-last', String(state.lastCheckIn));
-  localStorage.setItem('base-last-tx-hash', state.lastTxHash || '');
-  localStorage.setItem('base-last-tx-url', state.lastTxUrl || '');
+  storage.set('base-checkin-streak', String(state.streak));
+  storage.set('base-checkin-last', String(state.lastCheckIn));
+  storage.set('base-last-tx-hash', state.lastTxHash || '');
+  storage.set('base-last-tx-url', state.lastTxUrl || '');
 }
 function updateCountdown() {
   if (!state.lastCheckIn) {
@@ -320,8 +347,14 @@ function updateCountdown() {
 
 async function getProvider() {
   // In Farcaster Mini App, use SDK's provider
-  if (sdk?.wallet?.getEthereumProvider) {
-    return await sdk.wallet.getEthereumProvider();
+  if (isFarcasterClient() && sdk?.wallet?.getEthereumProvider) {
+    try {
+      const provider = await sdk.wallet.getEthereumProvider();
+      if (provider?.request) return provider;
+    } catch {
+      // Outside Farcaster some SDK wallet calls throw internal errors.
+      // Keep the standalone web fallback clean instead of surfacing noise.
+    }
   }
   // Fallback to browser wallet
   if (window.ethereum?.request) {
@@ -347,8 +380,7 @@ async function connectWallet() {
       state.wallet ? 'success' : 'warn'
     );
     hideWalletNudge();
-  } catch (err) {
-    console.error('Wallet connect error:', err);
+  } catch {
     setCheckInStatus('Wallet connect failed', 'warn');
   }
 }
@@ -364,8 +396,7 @@ async function ensureBaseNetwork() {
       params: [{ chainId: BASE_CHAIN }]
     });
     return true;
-  } catch (error) {
-    console.error('switch network failed', error);
+  } catch {
     return false;
   }
 }
@@ -407,7 +438,6 @@ async function gmOnBase() {
     beep(880, 0.08, 'sine', 0.03);
     vibrate([40, 30, 60]);
   } catch (error) {
-    console.error('tip tx failed', error);
     const msg = error?.message || '';
     if (msg.includes('User rejected') || msg.includes('User denied') || msg.includes('4001')) {
       setCheckInStatus('Transaction cancelled.', 'warn');
@@ -512,11 +542,12 @@ function endGame() {
 
   if (g.score > g.best) {
     g.best = g.score;
-    localStorage.setItem('mini-dino-best', String(g.best));
+    storage.set('mini-dino-best', String(g.best));
     els.bestScore.textContent = String(g.best);
     glowBestCard();
   }
   setGameStatus('Crashed');
+  els.game?.classList.remove('running');
   els.message.textContent = 'Game Over';
   els.message.classList.add('show');
   beep(180, 0.12, 'sawtooth', 0.03);
@@ -584,9 +615,7 @@ async function loadFarcasterUser() {
       console.log('[MiniDinoDash] Farcaster user:', fcUser.username);
       renderFarcasterUser();
     }
-  } catch (e) {
-    console.warn('[MiniDinoDash] Could not load Farcaster context:', e);
-  }
+  } catch {}
 }
 
 function renderFarcasterUser() {
@@ -598,7 +627,7 @@ function renderFarcasterUser() {
   }
   // Show avatar in support tab
   const connectBtn = els.connectBtn;
-  if (connectBtn && fcUser.pfpUrl) {
+  if (connectBtn && fcUser.pfpUrl && !connectBtn.querySelector('.fc-avatar')) {
     const avatar = document.createElement('img');
     avatar.src = fcUser.pfpUrl;
     avatar.className = 'fc-avatar';
@@ -617,19 +646,23 @@ async function shareScore() {
   const text = `${username} scored ${score} in Mini Dino Dash 🦕⚡\n\nCan you beat me?`;
   const url = 'https://miniapp-mu-seven.vercel.app';
 
-  // Use Farcaster SDK composeCast
-  try {
-    const result = await sdk.actions.composeCast({
-      text,
-      embeds: [url],
-    });
-    if (result?.cast) {
-      console.log('[MiniDinoDash] Cast shared:', result.cast.hash);
-      beep(880, 0.08, 'sine', 0.03);
+  const castPayload = { text, embeds: [url] };
+
+  // Use Farcaster SDK composeCast when available. Race with a short timeout so
+  // standalone browser previews never hang on Share.
+  if (isFarcasterClient() && sdk?.actions?.composeCast) {
+    try {
+      const result = await Promise.race([
+        sdk.actions.composeCast(castPayload),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('compose timeout')), 1200))
+      ]);
+      if (result?.cast) {
+        beep(880, 0.08, 'sine', 0.03);
+      }
+      return;
+    } catch {
+      // Fallback below handles non-Farcaster browsers and SDK rejection.
     }
-    return;
-  } catch (e) {
-    console.warn('[MiniDinoDash] composeCast failed, trying fallback:', e);
   }
 
   // Fallback: clipboard + warpcast URL
@@ -644,6 +677,12 @@ async function shareScore() {
         els.message.classList.add('show');
       }
     }, 1500);
+  } catch {}
+  try {
+    if (isFarcasterClient() && sdk?.actions?.openUrl) {
+      await sdk.actions.openUrl(warpcastUrl);
+      return;
+    }
   } catch {}
   window.open(warpcastUrl, '_blank', 'noopener,noreferrer');
 }
@@ -676,15 +715,14 @@ setInterval(updateCountdown, 1000);
 setInterval(fetchEthPrice, 60_000); // refresh ETH price every minute
 
 // Load Farcaster user context
-loadFarcasterUser();
+if (isFarcasterClient()) loadFarcasterUser();
 
 // ─── Farcaster Mini App SDK Ready ───
 // CRITICAL: Must call sdk.actions.ready() to hide splash screen
 ;(async function initFarcasterSDK() {
+  if (!isFarcasterClient()) return;
   try {
     await sdk.actions.ready();
     console.log('[MiniDinoDash] ✅ ready() success');
-  } catch (e) {
-    console.error('[MiniDinoDash] ❌ ready() failed:', e);
-  }
+  } catch {}
 })();

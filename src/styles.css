@@ -196,9 +196,9 @@ button { font: inherit; }
 .game-controls { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .btn { border: none; min-height: 44px; border-radius: 15px; padding: 10px 12px; font-weight: 900; cursor: pointer; color: var(--text); background: rgba(148,163,184,.12); border: 1px solid var(--line); transition: transform .16s ease, box-shadow .16s ease, background .16s ease; }
 .btn:active { transform: scale(.97); }
-.btn-primary { color: #001018; background: linear-gradient(135deg, var(--cyan), #2df093); box-shadow: 0 12px 26px rgba(34,211,238,.24); }
-.btn-secondary { background: linear-gradient(135deg, rgba(139,92,246,.18), rgba(34,211,238,.10)); }
-.btn-ghost { background: rgba(148,163,184,.08); }
+.btn.primary, .btn-primary { color: #001018; background: linear-gradient(135deg, var(--cyan), #2df093); box-shadow: 0 12px 26px rgba(34,211,238,.24); }
+.btn.secondary, .btn-secondary { background: linear-gradient(135deg, rgba(139,92,246,.18), rgba(34,211,238,.10)); }
+.btn.ghost, .btn-ghost { background: rgba(148,163,184,.08); }
 .btn:disabled { opacity: .45; cursor:not-allowed; box-shadow:none; }
 
 /* ── Support UI ── */
@@ -212,9 +212,10 @@ button { font: inherit; }
 .truncate { max-width: 66%; overflow:hidden; text-overflow: ellipsis; white-space:nowrap; }
 .tip-note { border-radius: 14px; padding: 10px 12px; background: rgba(34,211,238,.08); border: 1px solid rgba(34,211,238,.14); }
 .status { min-height: 20px; font-size: 12px; color: var(--muted); }
-.status.success { color: #34d399; }
-.status.error { color: #fb7185; }
-.status.pending { color: #fbbf24; }
+.status.success, .status-success { color: #34d399; }
+.status.error, .status-error { color: #fb7185; }
+.status.pending, .status-idle { color: #fbbf24; }
+.status.warn, .status-warning, .status-warn { color: #fbbf24; }
 .toast-nudge { position: fixed; top: 68px; left: 50%; transform: translateX(-50%) translateY(-8px); max-width: 340px; width: calc(100vw - 28px); padding: 11px 14px; border-radius: 16px; background: rgba(9,14,28,.94); border: 1px solid rgba(34,211,238,.30); color: #dbeafe; font-size: 12px; font-weight: 800; box-shadow: 0 12px 32px rgba(0,0,0,.34); backdrop-filter: blur(18px); opacity: 0; pointer-events: none; transition: opacity .3s ease, transform .3s ease; z-index: 30; text-align: center; }
 .toast-nudge.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
