@@ -718,11 +718,20 @@ setInterval(fetchEthPrice, 60_000); // refresh ETH price every minute
 if (isFarcasterClient()) loadFarcasterUser();
 
 // ─── Farcaster Mini App SDK Ready ───
-// CRITICAL: Must call sdk.actions.ready() to hide splash screen
+// CRITICAL: call ready() after first paint so the Farcaster splash never hangs.
 ;(async function initFarcasterSDK() {
-  if (!isFarcasterClient()) return;
-  try {
-    await sdk.actions.ready();
-    console.log('[MiniDinoDash] ✅ ready() success');
-  } catch {}
+  const markReady = async () => {
+    try {
+      if (sdk?.actions?.ready) {
+        await sdk.actions.ready();
+        console.log('[MiniDinoDash] ✅ ready() success');
+      }
+    } catch (error) {
+      console.warn('[MiniDinoDash] ready() failed gracefully', error?.message || error);
+    }
+  };
+
+  if (isFarcasterClient()) {
+    requestAnimationFrame(() => { markReady(); });
+  }
 })();

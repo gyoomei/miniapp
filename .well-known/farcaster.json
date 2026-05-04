@@ -8,23 +8,23 @@
     "version": "1",
     "name": "Mini Dino Dash",
     "iconUrl": "https://miniapp-mu-seven.vercel.app/icon.png",
-    "homeUrl": "https://miniapp-mu-seven.vercel.app",
-    "imageUrl": "https://miniapp-mu-seven.vercel.app/image.png",
+    "homeUrl": "https://miniapp-mu-seven.vercel.app/?v=4",
+    "imageUrl": "https://miniapp-mu-seven.vercel.app/og-v3.png",
     "buttonTitle": "Play now",
-    "splashImageUrl": "https://miniapp-mu-seven.vercel.app/splash.png",
+    "splashImageUrl": "https://miniapp-mu-seven.vercel.app/splash-v3.png",
     "splashBackgroundColor": "#0F172A",
     "subtitle": "Fast dino game on Base",
     "description": "A fast mini dino game with a small onchain support action on Base.",
     "primaryCategory": "games",
     "screenshotUrls": [
-      "https://miniapp-mu-seven.vercel.app/screenshot1.png"
+      "https://miniapp-mu-seven.vercel.app/og-v3.png"
     ],
-    "heroImageUrl": "https://miniapp-mu-seven.vercel.app/hero-image.png",
+    "heroImageUrl": "https://miniapp-mu-seven.vercel.app/og-v3.png",
     "tags": ["dino", "game", "base", "miniapp", "arcade"],
     "tagline": "Tap, run, and support on Base",
     "ogTitle": "Mini Dino Dash",
-    "ogImageUrl": "https://miniapp-mu-seven.vercel.app/screenshot1.png",
+    "ogImageUrl": "https://miniapp-mu-seven.vercel.app/og-v3.png",
     "ogDescription": "Play a fast dino-style mini game and support with a small onchain action on Base.",
-    "castShareUrl": "https://miniapp-mu-seven.vercel.app"
+    "castShareUrl": "https://miniapp-mu-seven.vercel.app/?v=4"
   }
 }

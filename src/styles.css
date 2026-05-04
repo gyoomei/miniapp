@@ -51,14 +51,14 @@
 
 html, body {
   margin: 0; width: 100%; height: 100%;
-  overflow: hidden; overscroll-behavior: none; touch-action: none;
+  overflow: hidden; overflow-x: hidden; overscroll-behavior: none; touch-action: manipulation;
   background: radial-gradient(circle at 50% -10%, rgba(34, 211, 238, 0.18), transparent 32%), linear-gradient(180deg, var(--bg-top), var(--bg-mid) 48%, var(--bg-bottom));
   color: var(--text);
 }
-body { position: fixed; inset: 0; }
+body { position: fixed; inset: 0; display: flex; justify-content: center; align-items: stretch; }
 button { font: inherit; }
 
-.ambient-bg { position: fixed; inset: 0; overflow: hidden; pointer-events: none; }
+.ambient-bg { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
 .orb { position: absolute; width: 260px; height: 260px; border-radius: 999px; filter: blur(38px); opacity: .36; animation: float-orb 8s ease-in-out infinite; }
 .orb-one { left: -120px; top: 8%; background: rgba(34,211,238,.34); }
 .orb-two { right: -150px; top: 28%; background: rgba(139,92,246,.32); animation-delay: -2s; }
@@ -68,8 +68,8 @@ button { font: inherit; }
 
 /* ── Shell: intentionally keeps original fixed app layout so game physics/tabs stay stable ── */
 .app-shell {
-  position: fixed; inset: 0;
-  max-width: 460px; margin: 0 auto;
+  position: fixed; top: 0; bottom: 0; left: 50%; transform: translateX(-50%);
+  width: min(100vw, 460px); max-width: 460px; margin: 0; z-index: 1;
   padding: calc(10px + env(safe-area-inset-top)) 12px calc(92px + env(safe-area-inset-bottom));
   overflow: hidden;
 }
@@ -228,8 +228,7 @@ button { font: inherit; }
 .nav-item::after { content:""; position:absolute; left: 22%; right:22%; bottom: 6px; height:3px; border-radius:999px; background: linear-gradient(90deg, var(--cyan), var(--violet)); opacity:0; transform: scaleX(.5); transition: opacity .25s ease, transform .25s ease; }
 .nav-item.active::after { opacity:1; transform: scaleX(1); }
 
-.theme-toggle { position: fixed; top: 14px; right: 14px; width: 42px; height: 42px; border-radius: 16px; border: 1px solid var(--line); color: var(--text); background: var(--surface); box-shadow: var(--shadow); z-index: 20; }
-@media (min-width: 500px) { .theme-toggle { right: calc(50% - 230px + 14px); } }
+.theme-toggle { position: fixed; top: calc(12px + env(safe-area-inset-top)); left: calc(50% + min(50vw, 230px) - 54px); width: 42px; height: 42px; border-radius: 16px; border: 1px solid var(--line); color: var(--text); background: var(--surface); box-shadow: var(--shadow); z-index: 20; }
 
 @keyframes fadeInUp { from{ opacity:0; transform: translateY(12px);} to{ opacity:1; transform: translateY(0);} }
 @keyframes fadeInDown { from{ opacity:0; transform: translateY(-10px);} to{ opacity:1; transform: translateY(0);} }
@@ -250,7 +249,7 @@ button { font: inherit; }
   .connect-btn { width: 100%; }
   .truncate { max-width: 60%; }
   .bottom-nav { width: calc(100vw - 18px); }
-  .theme-toggle { right: 12px; top: 10px; }
+  .theme-toggle { left: auto; right: 12px; top: calc(10px + env(safe-area-inset-top)); }
 }
 @media (max-height: 720px) {
   .app-header { height: 42px; margin-bottom: 6px; }
@@ -280,4 +279,45 @@ button { font: inherit; }
   .stat-card { min-height: 52px; }
   .game-area { min-height: 190px; }
   .nav-item { min-height: 46px; }
+}
+
+
+/* ── Premium motion polish / mobile overflow hardening ── */
+.app-shell::before {
+  content: ""; position: absolute; inset: 4px; border-radius: 30px; pointer-events: none;
+  background: linear-gradient(135deg, rgba(34,211,238,.20), transparent 34%, rgba(139,92,246,.16));
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  padding: 1px; opacity: .38; z-index: -1;
+}
+.hero-card, .panel, .stat-card, .bottom-nav { transform: translateZ(0); }
+.hero-card::after {
+  content: ""; position: absolute; inset: -45% -20%; pointer-events: none; opacity: .18;
+  background: linear-gradient(115deg, transparent 35%, rgba(255,255,255,.45), transparent 62%);
+  transform: translateX(-80%) rotate(8deg); animation: card-sheen 5.6s ease-in-out infinite; z-index: -1;
+}
+.btn { position: relative; overflow: hidden; }
+.btn::after {
+  content: ""; position: absolute; inset: 0; opacity: 0; border-radius: inherit;
+  background: radial-gradient(circle at 50% 50%, rgba(255,255,255,.32), transparent 42%);
+  transform: scale(.5); transition: opacity .18s ease, transform .18s ease;
+}
+.btn:active::after { opacity: 1; transform: scale(1.5); }
+.nav-item.active .nav-icon { animation: nav-pop .55s cubic-bezier(.22,1,.36,1); }
+.game-area.running .player { filter: drop-shadow(0 0 14px rgba(34,211,238,.55)); }
+.game-area.running .ground-line { animation: line-pulse .9s ease-in-out infinite; }
+.dust-particle {
+  position:absolute; width:5px; height:5px; border-radius:50%; pointer-events:none;
+  background: rgba(103,232,249,.82); box-shadow: 0 0 10px rgba(34,211,238,.45);
+  animation: dust-burst .45s ease-out forwards; z-index: 3;
+}
+@keyframes dust-burst { to { opacity:0; transform: translate3d(calc((var(--dx, 1) * 18px)), -16px, 0) scale(.2); } }
+@keyframes card-sheen { 0%,72%,100%{ transform: translateX(-80%) rotate(8deg); } 84%{ transform: translateX(80%) rotate(8deg); } }
+@keyframes nav-pop { 0%{ transform: scale(.9); } 55%{ transform: scale(1.18); } 100%{ transform: scale(1); } }
+@keyframes line-pulse { 0%,100%{ opacity:.62; } 50%{ opacity:1; } }
+@media (max-width: 380px) {
+  .app-shell { padding-left: 8px; padding-right: 8px; }
+  .hero-card h1 { font-size: 19px; max-width: 245px; }
+  .game-controls { gap: 6px; }
+  .btn { min-height: 42px; padding-left: 8px; padding-right: 8px; }
 }
